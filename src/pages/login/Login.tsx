@@ -6,10 +6,12 @@ import { useDispatch, useSelector } from "react-redux";
 import type { RootState, AppDispatch } from "../../store/store";
 import { clearAuthState, loginAdmin } from "../../store/slice/authSlice";
 import { useNavigate } from "react-router-dom";
+import { usePopup } from "../../components/Popup/PopupProvider";
 
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
+  const { showPopup } = usePopup();
   const { isDarkMode } = useSelector((state: RootState) => state.darkMode);
   const { loading, error, success } = useSelector(
     (state: RootState) => state.auth,
@@ -32,10 +34,13 @@ const Login = () => {
 
   useEffect(() => {
     if (success) {
+      showPopup("success", "Login successful!");
       navigate("/");
       dispatch(clearAuthState());
     }
+
     if (error) {
+      showPopup("error", error || "Login failed");
       dispatch(clearAuthState());
     }
   }, [success, error]);

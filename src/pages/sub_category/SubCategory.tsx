@@ -29,6 +29,8 @@ const SubCategory = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState<any>(null);
 
+  console.log(success);
+
   useEffect(() => {
     dispatch(getSubcategories() as any);
   }, []);
@@ -37,7 +39,6 @@ const SubCategory = () => {
     if (deleteMessage) {
       setDeleteModalOpen(false);
       setSelectedRow(null);
-
       dispatch(getSubcategories() as any);
       dispatch(clearSubcategoryState());
     }
@@ -134,6 +135,7 @@ const SubCategory = () => {
             ? subcategories?.map((item: any) => ({
                 id: item?._id,
                 name: item?.subCategory,
+                category: item?.category,
                 description: item?.description,
                 createdAt: new Date(item?.createdAt).toLocaleDateString(),
                 isActive: item?.status === 1,

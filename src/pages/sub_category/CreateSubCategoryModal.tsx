@@ -21,15 +21,15 @@ const CreateSubCategoryModal = ({ onClose, data }: any) => {
 
   useEffect(() => {
     dispatch(getCategories() as any);
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (data) {
       setForm({
-        subCategory: data?.subCategory || "",
+        subCategory: data?.name || "",
         description: data?.description || "",
       });
-      setSelectedCategory(data?.category || "");
+      setSelectedCategory(data?.category?._id || "");
     }
   }, [data]);
 
@@ -38,17 +38,17 @@ const CreateSubCategoryModal = ({ onClose, data }: any) => {
       alert("Name is required");
       return;
     }
-    const formData = new FormData();
-    formData.append("subCategory", form.subCategory);
-    formData.append("description", form.description);
+    const payload: any = {
+      subCategory: form.subCategory,
+      description: form.description,
+    };
     if (selectedCategory) {
-      formData.append("category", selectedCategory);
+      payload.category = selectedCategory;
     }
-
     if (isEdit) {
-      await dispatch(updateSubcategory({ slug: data?.slug, formData }) as any);
+      await dispatch(updateSubcategory({ slug: data?.slug, payload }) as any);
     } else {
-      await dispatch(createSubcategory(formData) as any);
+      await dispatch(createSubcategory(payload) as any);
     }
   };
 

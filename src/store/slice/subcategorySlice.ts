@@ -3,12 +3,12 @@ import { Fetch } from "../../api/axios";
 
 export const createSubcategory = createAsyncThunk(
   "subcategory/create",
-  async (formData: FormData, { rejectWithValue }) => {
+  async (payload: any, { rejectWithValue }) => {
     try {
       const res = await Fetch({
         endpoint: "/admin/subcategory",
         method: "POST",
-        body: formData,
+        body: payload,
       });
       return res?.data?.subcategory;
     } catch (err: any) {
@@ -50,14 +50,14 @@ export const deleteSubcategory = createAsyncThunk(
 export const updateSubcategory = createAsyncThunk(
   "subcategory/update",
   async (
-    { slug, formData }: { slug: string; formData: FormData },
+    { slug, payload }: { slug: string; payload: any },
     { rejectWithValue },
   ) => {
     try {
       const res = await Fetch({
         endpoint: `/admin/subcategory/${slug}`,
         method: "PATCH",
-        body: formData,
+        body: payload,
       });
       return res.data?.subcategory;
     } catch (err: any) {
@@ -88,9 +88,10 @@ const subcategorySlice = createSlice({
         state.loading = true;
         state.success = false;
       })
-      .addCase(createSubcategory.fulfilled, (state) => {
+      .addCase(createSubcategory.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true;
+        state.subcategories.push(action.payload);
       })
       .addCase(createSubcategory.rejected, (state, action) => {
         state.loading = false;
