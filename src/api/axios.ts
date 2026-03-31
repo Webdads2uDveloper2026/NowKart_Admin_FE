@@ -26,8 +26,8 @@ export const Fetch = async ({
 }: AxiosApiParams) => {
   try {
     const headers: Record<string, string> = {};
-
     if (!(body instanceof FormData)) {
+      
       headers["Content-Type"] = "application/json";
     }
 
