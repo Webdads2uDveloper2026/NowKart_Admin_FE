@@ -54,7 +54,7 @@ const CreateSubCategoryModal = ({ onClose, data }: any) => {
 
   return (
     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-9999">
-      <div className="bg-white p-6 rounded-xl w-[422px] space-y-5 shadow-xl">
+      <div className="bg-white p-6 rounded-xl w-[460px] space-y-5 shadow-xl">
         <h2 className="text-xl font-semibold text-gray-800">
           {isEdit ? "Update Category" : "Create Category"}
         </h2>
@@ -73,7 +73,7 @@ const CreateSubCategoryModal = ({ onClose, data }: any) => {
           </label>
           <input
             placeholder="Enter category name"
-            className="border p-3 w-full rounded-lg focus:outline-none "
+            className="border border-gray-300 p-3 w-full rounded-xl focus:outline-none "
             value={form.subCategory}
             onChange={(e) => setForm({ ...form, subCategory: e.target.value })}
           />
@@ -84,7 +84,7 @@ const CreateSubCategoryModal = ({ onClose, data }: any) => {
           </label>
           <input
             placeholder="Enter description"
-            className="border p-3 w-full rounded-lg focus:outline-none "
+            className="border border-gray-300 p-3 w-full rounded-xl  focus:outline-none "
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
           />
@@ -92,7 +92,7 @@ const CreateSubCategoryModal = ({ onClose, data }: any) => {
         <div className="flex justify-end gap-3 pt-2">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-lg border text-gray-600 hover:bg-gray-100 cursor-pointer"
+            className="px-4 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 cursor-pointer"
           >
             Cancel
           </button>
