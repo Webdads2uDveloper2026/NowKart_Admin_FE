@@ -1,5 +1,10 @@
-import axiosInstance from "../axios";
+import { Fetch } from "../axios";
+
 export const getProfile = async () => {
-  const response = await axiosInstance.get("/admins/me");
-  return response.data;
+  const response = await Fetch({
+    endpoint: "/admins/me",
+    method: "GET",
+  });
+
+  return response;
 };

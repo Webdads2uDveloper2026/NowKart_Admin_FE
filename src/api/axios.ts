@@ -1,33 +1,72 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
+
 const API_URL = import.meta.env.VITE_BASE_URL;
+const TIMEOUT = 90000;
 
 const axiosInstance = axios.create({
   baseURL: API_URL,
-  timeout: 15000,
-  headers: {
-    "Content-Type": "application/json",
-  },
+  timeout: TIMEOUT,
   withCredentials: true,
 });
 
-axiosInstance.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
-  return config;
-});
+interface AxiosApiParams {
+  endpoint: string;
+  method?: HttpMethod;
+  body?: any;
+  token?: string | null;
+}
 
-axiosInstance.interceptors.response.use(
-  (res) => res,
-  (err) => {
+export const Fetch = async ({
+  endpoint,
+  method = "GET",
+  body = null,
+  token = null,
+}: AxiosApiParams) => {
+  try {
+    const headers: Record<string, string> = {};
+
+    if (!(body instanceof FormData)) {
+      headers["Content-Type"] = "application/json";
+    }
+
+    const authToken = token || localStorage.getItem("token");
+    if (authToken) {
+      headers["Authorization"] = `Bearer ${authToken}`;
+    }
+
+    const response = await axiosInstance({
+      url: endpoint,
+      method: method.toLowerCase() as any,
+      headers,
+      ...(method !== "GET" ? { data: body } : {}),
+    });
+
+    return response.data;
+  } catch (error) {
+    const err = error as AxiosError<any>;
+
     if (err.response?.status === 401) {
       localStorage.clear();
-      window.location.href = "/login";
+      window.location.replace("/login");
+      throw new Error("Session expired");
     }
-    return Promise.reject(err);
-  }
-);
 
-export default axiosInstance;
+    if (err.code === "ECONNABORTED") {
+      throw new Error("Request timed out. Please try again.");
+    }
+
+    const data = err.response?.data;
+
+    const errorMessage =
+      data?.data?.message ||
+      data?.data?.errors ||
+      data?.errors ||
+      data?.message ||
+      err.message ||
+      "Something went wrong";
+
+    throw new Error(errorMessage);
+  }
+};

@@ -38,7 +38,6 @@ const ResuableFields: React.FC<ReusableFieldsProps> = ({
   placeholder,
   options = [],
   labelKey = "label",
-  valueKey = "value",
   apiEndpoint = null,
   error: externalError,
   isActive = false,
@@ -52,18 +51,13 @@ const ResuableFields: React.FC<ReusableFieldsProps> = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isFocused, setIsFocused] = useState<boolean>(false);
-
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const dropdownRef = useRef<HTMLDivElement | null>(null);
-
-  const {isDarkMode} = useSelector((state: any) => state.darkMode)
-
+  const { isDarkMode } = useSelector((state: any) => state.darkMode);
   const [internalError, setInternalError] = useState<string>("");
-
   const error = externalError || internalError;
 
-  // Fetch API options
   useEffect(() => {
     if (apiEndpoint && type === "select") {
       const fetchData = async () => {
@@ -82,7 +76,6 @@ const ResuableFields: React.FC<ReusableFieldsProps> = ({
     }
   }, [apiEndpoint, type]);
 
-  // Password validation
   useEffect(() => {
     if (type === "password" && passwordValidation) {
       validatePassword(value);
@@ -107,32 +100,13 @@ const ResuableFields: React.FC<ReusableFieldsProps> = ({
       setInternalError(`Password must be at least ${minLength} characters`);
     } else if (!hasLower || !hasUpper || !hasNumber || !hasSpecial) {
       setInternalError(
-        "Password must contain lowercase, uppercase, number, and special character"
+        "Password must contain lowercase, uppercase, number, and special character",
       );
     } else {
       setInternalError("");
     }
   };
 
-  const finalOptions = apiEndpoint ? dynamicOptions : options;
-
-  const filteredOptions = finalOptions.filter((item: any) => {
-    const label = item[labelKey] || item;
-    return label.toLowerCase().includes(searchTerm.toLowerCase());
-  });
-
-  const handleSelectOption = (selectedValue: any) => {
-    onChange({
-      target: {
-        name,
-        value: selectedValue,
-      },
-    });
-    setIsOpen(false);
-    setSearchTerm("");
-  };
-
-  // Close dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -150,46 +124,32 @@ const ResuableFields: React.FC<ReusableFieldsProps> = ({
 
   const isFloating =
     isFocused ||
-    (value !== undefined &&
-      value !== null &&
-      value.toString().length > 0) ||
+    (value !== undefined && value !== null && value.toString().length > 0) ||
     type === "date" ||
     type === "select" ||
     isOpen ||
     isActive;
 
-//   const labelStyles = `absolute transition-all duration-200 pointer-events-none z-10 left-3 px-1.5 ${
-//     isFloating
-//       ? "-top-2.5 text-[12px] text-[#ffffff] "
-//       : "top-1/2 -translate-y-1/2 text-[14px]"
-//   } ${
-//     error
-//       ? "text-red-500 font-semibold"
-//       : isFocused || isActive || isOpen
-//       ? "text-[#0062a0]"
-//       : "text-gray-500"
-//   }`;
-
   const labelStyles = `absolute transition-all duration-200 pointer-events-none z-10 left-3 px-1 rounded-sm ${
-  isFloating
-    ? `-top-2.5 text-[12px] ${
-        isDarkMode ? "bg-[#101828] text-white" : "bg-white text-black"
-      }`
-    : "top-1/2 -translate-y-1/2 text-[14px]"
-} ${
-  error
-    ? "text-red-500 font-semibold"
-    : isFocused || isActive || isOpen
-    ? "text-[#0062a0]"
-    : "text-gray-500"
-}`;
+    isFloating
+      ? `-top-2.5 text-[12px] ${
+          isDarkMode ? "bg-[#101828] text-white" : "bg-white text-black"
+        }`
+      : "top-1/2 -translate-y-1/2 text-[14px]"
+  } ${
+    error
+      ? "text-red-500 font-semibold"
+      : isFocused || isActive || isOpen
+        ? "text-[#0062a0]"
+        : "text-gray-500"
+  }`;
 
   const inputBaseStyles = `w-full px-4 py-2.5 rounded-lg border text-sm transition-all duration-300 outline-none bg-[transparent] ${
     error
       ? "border-red-500"
       : isFocused || isActive || isOpen
-      ? "border-[#0062a0] shadow-md shadow-blue-900/10 ring-1 ring-[#0062a0]/10"
-      : "border-slate-300 hover:border-[#0062a0]/50 focus:border-[#0062a0]"
+        ? "border-[#0062a0] shadow-md shadow-blue-900/10 ring-1 ring-[#0062a0]/10"
+        : "border-slate-300 hover:border-[#0062a0]/50 focus:border-[#0062a0]"
   } ${disabled ? "bg-gray-50 cursor-not-allowed opacity-70" : ""}`;
 
   return (
@@ -235,7 +195,7 @@ const ResuableFields: React.FC<ReusableFieldsProps> = ({
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
             disabled={disabled}
-            placeholder={isFocused ? placeholder : ""}
+            placeholder=" "
             className={`${inputBaseStyles} min-h-[100px] resize-none`}
           />
         ) : (
@@ -256,7 +216,7 @@ const ResuableFields: React.FC<ReusableFieldsProps> = ({
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
               disabled={disabled}
-              placeholder={isFocused ? placeholder : ""}
+              placeholder=" "
               className={inputBaseStyles}
             />
             {type === "password" && (
