@@ -16,6 +16,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 
+
 // Define types for Redux state
 interface DarkModeState {
   isDarkMode: boolean;
@@ -83,6 +84,8 @@ interface TableProps<T = any> {
   initialSortDirection?: 'asc' | 'desc';
   showDateFilter?: boolean;
   enableDragScroll?: boolean;
+  showAddButton?: boolean;    
+  onAddClick?: () => void;
   onStatusEdit?: (row: T, column: string, newValue: string) => void;
 }
 
@@ -155,7 +158,10 @@ const Table = <T extends Record<string, any>>({
   tableHeight = "500px",
   initialSortColumn,
   initialSortDirection = 'asc',
+  showAddButton = false,
+  onAddClick,
   enableDragScroll = true,
+  
   onStatusEdit
 }: TableProps<T>) => {
   const { isDarkMode } = useSelector((state: RootState) => state.darkMode);
@@ -269,15 +275,12 @@ const Table = <T extends Record<string, any>>({
   const endIndex = Math.min(startIndex + rowsPerPage, totalItems);
   const paginatedData = processedData.slice(startIndex, endIndex);
 
-  // Reset to first page when data, search, or rows per page changes
   useEffect(() => {
     setCurrentPage(1);
   }, [data, searchTerm, rowsPerPage]);
 
-  // Drag scroll handlers
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!enableDragScroll || !scrollContainerRef.current) return;
-    
     setIsDragging(true);
     setStartX(e.pageX - scrollContainerRef.current.offsetLeft);
     setScrollLeft(scrollContainerRef.current.scrollLeft);
@@ -755,6 +758,8 @@ const Table = <T extends Record<string, any>>({
             />
           </motion.div>
         )}
+         
+        
         
         {enableDragScroll && (
           <motion.div 
@@ -763,6 +768,15 @@ const Table = <T extends Record<string, any>>({
               isDarkMode ? 'text-gray-400' : 'text-gray-500'
             }`}
           >
+            {/* <button>Add</button> */}
+            {showAddButton && (
+      <button
+        onClick={onAddClick}
+        className="px-4 py-2 bg-orange-600 cursor-pointer text-white rounded-lg text-sm hover:bg-orange-700 transition"
+      >
+        + Add
+      </button>
+    )}
             <GripHorizontal className="w-4 h-4" />
             <span>Drag to scroll horizontally</span>
           </motion.div>
