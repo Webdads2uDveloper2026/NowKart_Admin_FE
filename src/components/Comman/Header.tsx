@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { initializeTheme, toggleDarkMode } from "../../store/slice/DarkMode";
+import { initializeTheme, toggleDarkMode } from "../../store/slice/darkModeSlice";
 import { getProfile } from "../../api/auth/adminApi";
 // Define types for Redux state
 interface DarkModeState {

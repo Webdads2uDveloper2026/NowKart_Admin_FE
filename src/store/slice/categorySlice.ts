@@ -1,56 +1,52 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axiosInstance from "../../api/axios";
-const BASE_URL = import.meta.env.VITE_BASE_URL;
+import { Fetch } from "../../api/axios";
 
-// CREATE
 export const createCategory = createAsyncThunk(
   "category/create",
   async (formData: FormData, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.post(`${BASE_URL}/admin/catgeory`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+      const res = await Fetch({
+        endpoint: "/admin/catgeory",
+        method: "POST",
+        body: formData,
       });
-      return res.data.data.category;
+      return res.data.category;
     } catch (err: any) {
-      return rejectWithValue(err.response?.data?.message || "Error");
+      return rejectWithValue(err.message || "Error");
     }
   }
 );
 
-// GET 
 export const getCategories = createAsyncThunk(
   "category/getAll",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.get(
-        `${BASE_URL}/admin/catgeory`
-      );
-
-      return res.data.data;
-
+      const res = await Fetch({
+        endpoint: "/admin/catgeory",
+        method: "GET",
+      });
+      return res.data;
     } catch (err: any) {
-      return rejectWithValue(err.response?.data || "Error");
+      return rejectWithValue(err.message || "Error");
     }
   }
 );
 
-// DELETE
 export const deleteCategory = createAsyncThunk(
   "category/delete",
   async (slug: string, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.delete(
-        `${BASE_URL}/admin/catgeory/${slug}`
-      );
-
-      return slug; // return deleted slug
+      await Fetch({
+        endpoint: `/admin/catgeory/${slug}`,
+        method: "DELETE",
+      });
+      return slug;
     } catch (err: any) {
-      return rejectWithValue(err.response?.data || "Error");
+      return rejectWithValue(err.message || "Error");
     }
   }
 );
 
-// updated
 export const updateCategory = createAsyncThunk(
   "category/update",
   async (
@@ -58,21 +54,17 @@ export const updateCategory = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const res = await axiosInstance.patch(
-        `${BASE_URL}/admin/catgeory/${slug}`,
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
-
-      return res.data.data.category;
+      const res = await Fetch({
+        endpoint: `/admin/catgeory/${slug}`,
+        method: "PATCH",
+        body: formData,
+      });
+      return res.data.category;
     } catch (err: any) {
-      return rejectWithValue(err.response?.data?.message || "Error");
+      return rejectWithValue(err.message || "Error");
     }
   }
 );
-
 
 const categorySlice = createSlice({
   name: "category",
@@ -90,7 +82,6 @@ const categorySlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // CREATE
       .addCase(createCategory.pending, (state) => {
         state.loading = true;
         state.success = false;
@@ -103,8 +94,6 @@ const categorySlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-
-      // GET
       .addCase(getCategories.pending, (state) => {
         state.loading = true;
       })
@@ -116,17 +105,11 @@ const categorySlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-
-
-      // DELETE
-
       .addCase(deleteCategory.pending, (state) => {
         state.loading = true;
       })
       .addCase(deleteCategory.fulfilled, (state, action) => {
         state.loading = false;
-
-        // remove deleted item from state
         state.categories = state.categories.filter(
           (item: any) => item.categoryName.slug !== action.payload
         );
@@ -135,9 +118,6 @@ const categorySlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-
-      // UPDATE
-
       .addCase(updateCategory.pending, (state) => {
         state.loading = true;
         state.success = false;
@@ -150,7 +130,6 @@ const categorySlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       });
-
   },
 });
 
