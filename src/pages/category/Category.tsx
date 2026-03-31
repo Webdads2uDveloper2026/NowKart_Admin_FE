@@ -1,9 +1,15 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Table from "../../components/Table/Table";
+import type { Column } from "../../components/Table/Table";
 import CreateCategoryModal from "./CreateCategoryModal";
-import { getCategories, deleteCategory, clearCategoryState } from "../../store/slice/categorySlice";
+import {
+  getCategories,
+  deleteCategory,
+  clearCategoryState,
+} from "../../store/slice/categorySlice";
 import Image from "../../components/Image/Image";
+import ConfirmDeleteModal from "../../components/CommonDeleteModel/CommonDeleteModel";
 
 interface CategoryData {
   id: number;
@@ -11,16 +17,20 @@ interface CategoryData {
   description: string;
   createdAt: string;
   isActive: boolean;
+  image?: string;
+  slug?: string;
 }
 
 const Category = () => {
   const dispatch = useDispatch();
   const { categories, loading, success } = useSelector(
-    (state: any) => state.category || {}
+    (state: any) => state.category || {},
   );
 
   const [openModal, setOpenModal] = useState(false);
   const [editData, setEditData] = useState<any>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [selectedRow, setSelectedRow] = useState<any>(null);
 
   useEffect(() => {
     dispatch(getCategories() as any);
@@ -35,14 +45,28 @@ const Category = () => {
     }
   }, [success, openModal]);
 
-  const columns = [
+  const handleConfirmDelete = () => {
+    if (selectedRow?.slug) {
+      dispatch(deleteCategory(selectedRow.slug) as any);
+    }
+  };
+
+  useEffect(() => {
+    if (success) {
+      setDeleteModalOpen(false);
+      setSelectedRow(null);
+      dispatch(getCategories() as any);
+      dispatch(clearCategoryState());
+    }
+  }, [success]);
+
+  const columns: Column<CategoryData>[] = [
     {
       key: "image",
       header: "Image",
       width: "100px",
-      align: "center" as const,
-      type: "custom" as const,
-      render: (row: any) => (
+      align: "center",
+      accessor: (row: any) => (
         <Image
           src={row.image}
           alt="category"
@@ -55,8 +79,8 @@ const Category = () => {
       header: "CATEGORY NAME",
       width: "180px",
       sortable: true,
-      align: "left" as const,
-      type: "text" as const,
+      align: "left",
+      type: "text",
     },
     {
       key: "description",
@@ -104,11 +128,8 @@ const Category = () => {
           setOpenModal(true);
         },
         onDelete: (row: any) => {
-          if (window.confirm("Are you sure you want to delete?")) {
-            dispatch(deleteCategory(row.slug) as any).then(() => {
-              dispatch(getCategories() as any);
-            });
-          }
+          setSelectedRow(row);
+          setDeleteModalOpen(true);
         },
       },
     },
@@ -121,16 +142,14 @@ const Category = () => {
         data={
           categories?.length
             ? categories.map((item: any) => ({
-              id: item.categoryName._id,
-              name: item.categoryName.name,
-              description: item.categoryName.description,
-              createdAt: new Date(
-                item.categoryName.createdAt
-              ).toLocaleDateString(),
-              isActive: item.categoryName.status === 1,
-              slug: item.categoryName.slug,
-              image: item.categoryName.categoryImage,
-            }))
+                id: item?._id,
+                name: item?.name,
+                description: item?.description,
+                createdAt: new Date(item?.createdAt).toLocaleDateString(),
+                isActive: item?.status === 1,
+                slug: item?.slug,
+                image: item?.categoryImage,
+              }))
             : []
         }
         showAddButton={true}
@@ -157,6 +176,14 @@ const Category = () => {
           data={editData}
         />
       )}
+
+      <ConfirmDeleteModal
+        isOpen={deleteModalOpen}
+        title="Are you sure you want to delete this category?"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteModalOpen(false)}
+        loading={loading}
+      />
     </div>
   );
 };

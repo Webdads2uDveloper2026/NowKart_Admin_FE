@@ -7,54 +7,57 @@ import HoleSales from "../../../pages/hole_sales/HoleSales";
 import Orders from "../../../pages/orders/Orders";
 import Product_Enquiries from "../../../pages/produc_inquiries/Product_Enquiries";
 import Products from "../../../pages/products/Products";
+import SubCategory from "../../../pages/sub_category/SubCategory";
 import Users from "../../../pages/users/Users";
 import Vendors from "../../../pages/vendors/Vendors";
 
 export const Dashboard_Route = [
-
-    
-    {
-        path:"/dashboard",
-        Component:Dashboard,
-    },
-    {
-        path:"/category",
-        Component:Category,
-    },
-    {
-        path:"/products",
-        Component:Products,
-    },
-    {
-        path:"/orders",
-        Component:Orders,
-    },
-    {
-        path:"/hole-sale",
-        Component:HoleSales,
-    },
-    {
-        path:"/product-enquiry",
-        Component:Product_Enquiries,
-    },
-    {
-        path:"/contact",
-        Component:Contact,
-    },
-    {
-        path:"/users",
-        Component:Users,
-    },
-    {
-        path:"/currency-convert",
-        Component:Currency_Convert,
-    },
-    {
-        path:"/coupon",
-        Component:Coupon,
-    },
-    {
-        path:"/vendors",
-        Component:Vendors,
-    }
-]
+  {
+    path: "/dashboard",
+    Component: Dashboard,
+  },
+  {
+    path: "/category",
+    Component: Category,
+  },
+  {
+    path: "/subcategory",
+    Component: SubCategory,
+  },
+  {
+    path: "/products",
+    Component: Products,
+  },
+  {
+    path: "/orders",
+    Component: Orders,
+  },
+  {
+    path: "/hole-sale",
+    Component: HoleSales,
+  },
+  {
+    path: "/product-enquiry",
+    Component: Product_Enquiries,
+  },
+  {
+    path: "/contact",
+    Component: Contact,
+  },
+  {
+    path: "/users",
+    Component: Users,
+  },
+  {
+    path: "/currency-convert",
+    Component: Currency_Convert,
+  },
+  {
+    path: "/coupon",
+    Component: Coupon,
+  },
+  {
+    path: "/vendors",
+    Component: Vendors,
+  },
+];

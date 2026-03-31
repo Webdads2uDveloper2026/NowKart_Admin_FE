@@ -55,7 +55,7 @@ const CreateCategoryModal = ({ onClose, data }: any) => {
 
   return (
     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-9999">
-      <div className="bg-white p-6 rounded-xl w-[421px] space-y-4 shadow-xl">
+      <div className="bg-white p-6 rounded-xl w-[422px] space-y-4 shadow-xl">
         <h2 className="text-xl font-semibold text-gray-800">
           {isEdit ? "Update Category" : "Create Category"}
         </h2>

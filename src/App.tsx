@@ -1,8 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useSelector } from "react-redux";
 import { Outlet, useLocation } from "react-router-dom";
-import Header from "./components/Comman/Header";
-import SideBar from "./components/Comman/SideBar";
+import Header from "./components/Common/Header";
+import SideBar from "./components/Common/SideBar";
 import "./index.css";
 
 interface DarkModeState {

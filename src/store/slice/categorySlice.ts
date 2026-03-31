@@ -14,7 +14,7 @@ export const createCategory = createAsyncThunk(
     } catch (err: any) {
       return rejectWithValue(err.message || "Error");
     }
-  }
+  },
 );
 
 export const getCategories = createAsyncThunk(
@@ -29,7 +29,7 @@ export const getCategories = createAsyncThunk(
     } catch (err: any) {
       return rejectWithValue(err.message || "Error");
     }
-  }
+  },
 );
 
 export const deleteCategory = createAsyncThunk(
@@ -44,14 +44,14 @@ export const deleteCategory = createAsyncThunk(
     } catch (err: any) {
       return rejectWithValue(err.message || "Error");
     }
-  }
+  },
 );
 
 export const updateCategory = createAsyncThunk(
   "category/update",
   async (
     { slug, formData }: { slug: string; formData: FormData },
-    { rejectWithValue }
+    { rejectWithValue },
   ) => {
     try {
       const res = await Fetch({
@@ -63,7 +63,7 @@ export const updateCategory = createAsyncThunk(
     } catch (err: any) {
       return rejectWithValue(err.message || "Error");
     }
-  }
+  },
 );
 
 const categorySlice = createSlice({
@@ -108,11 +108,9 @@ const categorySlice = createSlice({
       .addCase(deleteCategory.pending, (state) => {
         state.loading = true;
       })
-      .addCase(deleteCategory.fulfilled, (state, action) => {
+      .addCase(deleteCategory.fulfilled, (state) => {
         state.loading = false;
-        state.categories = state.categories.filter(
-          (item: any) => item.categoryName.slug !== action.payload
-        );
+        state.success = true;
       })
       .addCase(deleteCategory.rejected, (state, action) => {
         state.loading = false;
@@ -122,7 +120,7 @@ const categorySlice = createSlice({
         state.loading = true;
         state.success = false;
       })
-      .addCase(updateCategory.fulfilled, (state, action) => {
+      .addCase(updateCategory.fulfilled, (state) => {
         state.loading = false;
         state.success = true;
       })

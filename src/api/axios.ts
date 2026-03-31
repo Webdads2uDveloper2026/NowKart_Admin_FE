@@ -21,13 +21,12 @@ interface AxiosApiParams {
 export const Fetch = async ({
   endpoint,
   method = "GET",
-  body = null,
+  body = {},
   token = null,
 }: AxiosApiParams) => {
   try {
     const headers: Record<string, string> = {};
     if (!(body instanceof FormData)) {
-      
       headers["Content-Type"] = "application/json";
     }
 
