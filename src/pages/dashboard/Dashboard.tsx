@@ -1,5 +1,7 @@
 
 const Dashboard = () => {
+  console.log(localStorage.getItem("token"));
+
   return (
     <div>Dashboard</div>
   )

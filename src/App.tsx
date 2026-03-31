@@ -43,9 +43,9 @@ const App = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
-                className="h-full p-6"
+                className="h-full "
               >
-                <div className={`h-full rounded-xl ${
+                <div className={`h-full  ${
                   isDarkMode 
                     ? 'bg-gray-800/90 backdrop-blur-sm shadow-lg shadow-gray-900/50 border border-gray-700/50' 
                     : 'bg-white shadow-md border border-gray-100'
