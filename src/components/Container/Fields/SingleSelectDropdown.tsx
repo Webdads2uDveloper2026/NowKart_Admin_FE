@@ -78,7 +78,7 @@ const SingleSelectDropdown: React.FC<SingleSelectDropdownProps> = ({
       )}
 
       <div
-        className="w-full p-3 border border-gray-300 rounded-xl cursor-pointer 
+        className="w-full p-3 border border-gray-400  rounded cursor-pointer 
         flex items-center justify-between bg-white relative"
         onClick={() => setOpen(!open)}
       >
@@ -103,7 +103,7 @@ const SingleSelectDropdown: React.FC<SingleSelectDropdownProps> = ({
       </div>
 
       {open && (
-        <div className="absolute w-full mt-1 bg-white shadow-lg border border-gray-300 rounded-sm z-30 max-h-64 overflow-y-auto">
+        <div className="absolute w-full mt-1 bg-white shadow-lg border border-gray-400 rounded-sm z-30 max-h-64 overflow-y-auto">
           {searchable && (
             <div className="p-2 border-b border-gray-300 flex items-center gap-2">
               <Search size={15} className="text-gray-500" />

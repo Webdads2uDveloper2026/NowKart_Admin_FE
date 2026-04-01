@@ -1,6 +1,8 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, AlertTriangle, X } from "lucide-react";
+import { X } from "lucide-react";
 import React from "react";
+import success from "../../../assets/success.jpg";
+import error from "../../../assets/error.jpg";
 
 type PopupAlertProps = {
   type?: "success" | "error";
@@ -23,14 +25,16 @@ const PopupAlert: React.FC<PopupAlertProps> = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 flex items-center justify-center bg-black/40 z-[9999]"
+        className="fixed inset-0 flex items-center justify-center bg-black/40 z-9999"
       >
         <motion.div
           initial={{ scale: 0.7, y: 80 }}
           animate={{ scale: 1, y: 0 }}
           exit={{ scale: 0.7, y: 80 }}
           transition={{ duration: 0.35, delay: 0.2 }}
-          className="w-[340px] rounded-2xl overflow-hidden bg-[#f4f4f4] shadow-2xl relative"
+          className={`w-[340px] rounded-2xl overflow-hidden bg-[#f4f4f4] relative 
+shadow-[0_10px_30px_rgba(0,0,0,0.2)] 
+${isSuccess ? "shadow-green-200/40" : "shadow-red-200/40"}`}
         >
           <button
             onClick={onClose}
@@ -38,8 +42,7 @@ const PopupAlert: React.FC<PopupAlertProps> = ({
           >
             <X size={18} />
           </button>
-
-          <div className="relative h-[170px]">
+          <div className="relative h-[171px] flex items-center justify-center">
             <div
               className={`absolute inset-0 ${
                 isSuccess ? "bg-green-500" : "bg-orange-500"
@@ -50,26 +53,24 @@ const PopupAlert: React.FC<PopupAlertProps> = ({
               className="absolute inset-0 bg-white/20"
               style={{ borderBottomRightRadius: "190px" }}
             />
-
-            <div className="absolute top-[25px] left-1/2 -translate-x-1/2 text-white">
-              <div className="w-16 h-16 border-2 border-white rounded-full flex items-center justify-center">
-                {isSuccess ? <Check size={32} /> : <AlertTriangle size={32} />}
-              </div>
+            <div className="relative z-10">
+              <img
+                src={isSuccess ? success : error}
+                alt="status"
+                className="w-20 h-20 object-contain rounded-full border-2 border-white bg-white p-1"
+              />
             </div>
           </div>
-
           <div className="px-6 py-6 text-center bg-[#f4f4f4]">
             <h2 className="text-lg font-semibold text-gray-800 mb-1">
               {isSuccess ? "Success!" : "Error!"}
             </h2>
-
             <p className="text-xs font-medium mb-5 leading-5">
               {message ||
                 (isSuccess
                   ? "Welcome to our platform. Login has been successful."
                   : "Something went wrong while signing up.")}
             </p>
-
             <button
               onClick={onAction || onClose}
               className={`w-full py-2 rounded-md text-white text-sm font-semibold cursor-pointer ${

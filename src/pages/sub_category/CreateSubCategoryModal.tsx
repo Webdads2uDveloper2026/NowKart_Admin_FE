@@ -56,7 +56,7 @@ const CreateSubCategoryModal = ({ onClose, data }: any) => {
   return (
     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-9999">
       <div className="bg-white p-6 rounded-xl w-[460px] space-y-5 shadow-xl">
-        <h2 className="text-xl font-semibold text-gray-800">
+        <h2 className="text-xl font-bold text-gray-800 text-center">
           {isEdit ? "Update Category" : "Create Category"}
         </h2>
         <SingleSelectDropdown
@@ -74,7 +74,7 @@ const CreateSubCategoryModal = ({ onClose, data }: any) => {
           </label>
           <input
             placeholder="Enter category name"
-            className="border border-gray-300 p-3 w-full rounded-xl focus:outline-none "
+            className="border  p-3 w-full  border-gray-600  focus:outline-none "
             value={form.subCategory}
             onChange={(e) => setForm({ ...form, subCategory: e.target.value })}
           />
@@ -85,7 +85,7 @@ const CreateSubCategoryModal = ({ onClose, data }: any) => {
           </label>
           <input
             placeholder="Enter description"
-            className="border border-gray-300 p-3 w-full rounded-xl  focus:outline-none "
+            className="border  p-3 w-full border-gray-600  focus:outline-none "
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
           />

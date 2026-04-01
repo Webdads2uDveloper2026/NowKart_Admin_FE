@@ -10,8 +10,8 @@ import FileUpload from "../../components/Container/Fields/FileUpload";
 const CreateCategoryModal = ({ onClose, data }: any) => {
   const dispatch = useDispatch();
   const { loading } = useSelector((state: any) => state.category);
-  const [image, setImage] = useState<any>(null);
-  const [video, setVideo] = useState<any>(null);
+  const [image, setImage] = useState<File | null>(null);
+  const [video, setVideo] = useState<File | null>(null);
 
   const isEdit = !!data;
   const [form, setForm] = useState({
@@ -69,18 +69,18 @@ const CreateCategoryModal = ({ onClose, data }: any) => {
         onClick={(e) => e.stopPropagation()}
         className="bg-white p-6 rounded-xl w-[422px] space-y-4 shadow-xl"
       >
-        <h2 className="text-xl font-semibold text-gray-800">
+        <h2 className="text-xl font-bold text-gray-800 text-center">
           {isEdit ? "Update Category" : "Create Category"}
         </h2>
         <input
           placeholder="Category Name"
-          className="border p-3 w-full rounded-lg focus:outline-none border-gray-300 hover:border-orange-500"
+          className="border p-3 w-full  focus:outline-none  hover:border-orange-500"
           value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
         />
-        <input
+        <textarea
           placeholder="Description"
-          className="border p-3 w-full rounded-lg focus:outline-none border-gray-300 hover:border-orange-500"
+          className="border p-3 w-full focus:outline-none hover:border-orange-500 rounded-md"
           value={form.description}
           onChange={(e) => setForm({ ...form, description: e.target.value })}
         />
@@ -88,16 +88,16 @@ const CreateCategoryModal = ({ onClose, data }: any) => {
           label="Image"
           type="image"
           value={image}
-          setValue={setImage}
-          previewUrl={data?.image}
+          setValue={(file) => setImage(file as File | null)}
+          previewUrl={data?.image ?? null}
         />
 
         <FileUpload
           label="Video"
           type="video"
           value={video}
-          setValue={setVideo}
-          previewUrl={data?.video}
+          setValue={(file) => setVideo(file as File | null)}
+          previewUrl={data?.video ?? null}
         />
         <div className="flex justify-end gap-3 pt-2">
           <Button variant="secondary" onClick={onClose}>

@@ -10,7 +10,6 @@ import {
 } from "../../store/slice/categorySlice";
 import Image from "../../components/Container/Image/Image";
 import ConfirmDeleteModal from "../../components/Container/CommonDeleteModel/CommonDeleteModel";
-import { video } from "motion/react-client";
 
 interface CategoryData {
   id: number;

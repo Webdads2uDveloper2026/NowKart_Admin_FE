@@ -112,49 +112,61 @@ const SideBar: React.FC = () => {
 
           return (
             <div key={item.name} className="mb-1">
-              <div
-                onClick={() => item.children && toggleItem(item.name)}
-                className={`flex items-center ${
-                  !isHovered ? "justify-center" : "justify-start"
-                } p-3 rounded-lg cursor-pointer ${
-                  isDarkMode
-                    ? "text-gray-400 hover:bg-gray-800 hover:text-gray-200"
-                    : "text-gray-600 hover:bg-orange-50 hover:text-orange-600"
-                }`}
-              >
-                <Icon className="w-5 h-5" />
-
-                {isHovered && (
-                  <>
-                    <span className="ml-3 text-sm font-medium">
-                      {item.name}
-                    </span>
-
-                    {item.children && (
-                      <span className="ml-auto text-xs">
-                        {isOpen ? "▲" : "▼"}
+              {!item.children ? (
+                <NavLink to={item.path || "#"}>
+                  <div
+                    className={`flex items-center ${
+                      !isHovered ? "justify-center" : "justify-start"
+                    } p-3 rounded-lg cursor-pointer ${
+                      isDarkMode
+                        ? "text-gray-400 hover:bg-gray-800 hover:text-gray-200"
+                        : "text-gray-600 hover:bg-orange-50 hover:text-orange-600"
+                    }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                    {isHovered && (
+                      <span className="ml-3 text-sm font-medium">
+                        {item.name}
                       </span>
                     )}
-                  </>
-                )}
-              </div>
-              {!item.children && <NavLink to={item.path || "#"} />}
-              {item.children && isOpen && isHovered && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  className="ml-8 overflow-hidden"
-                >
-                  {item.children.map((sub) => (
-                    <NavLink
-                      key={sub.name}
-                      to={sub.path || "#"}
-                      className="block p-2 text-sm rounded hover:text-orange-500"
-                    >
-                      {sub.name}
-                    </NavLink>
-                  ))}
-                </motion.div>
+                  </div>
+                </NavLink>
+              ) : (
+                <>
+                  <div
+                    onClick={() => toggleItem(item.name)}
+                    className={`flex items-center ${
+                      !isHovered ? "justify-center" : "justify-start"
+                    } p-3 rounded-lg cursor-pointer`}
+                  >
+                    <Icon className="w-5 h-5" />
+
+                    {isHovered && (
+                      <>
+                        <span className="ml-3 text-sm font-medium">
+                          {item.name}
+                        </span>
+                        <span className="ml-auto text-xs">
+                          {isOpen ? "▲" : "▼"}
+                        </span>
+                      </>
+                    )}
+                  </div>
+
+                  {isOpen && isHovered && (
+                    <div className="ml-8">
+                      {item.children.map((sub) => (
+                        <NavLink
+                          key={sub.name}
+                          to={sub.path || "#"}
+                          className="block p-2 text-sm hover:text-orange-500"
+                        >
+                          {sub.name}
+                        </NavLink>
+                      ))}
+                    </div>
+                  )}
+                </>
               )}
             </div>
           );
