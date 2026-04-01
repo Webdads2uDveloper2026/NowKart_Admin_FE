@@ -6,7 +6,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import "./index.css";
 import { Main_Route } from "./routes/main_route/Main_Route";
 import { store, persistor } from "./store/store";
-import { PopupProvider } from "./components/Popup/PopupProvider";
+import { PopupProvider } from "./components/Container/Popup/PopupProvider";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

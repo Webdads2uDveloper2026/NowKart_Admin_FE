@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Table from "../../components/Table/Table";
+import Table from "../../components/Container/Table/Table";
 
 interface OrderData {
     id: number;

@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Table from "../../components/Table/Table";
-import type { Column } from "../../components/Table/Table";
+import Table from "../../components/Container/Table/Table";
+import type { Column } from "../../components/Container/Table/Table";
 import CreateCategoryModal from "./CreateCategoryModal";
 import {
   getCategories,
   deleteCategory,
   clearCategoryState,
 } from "../../store/slice/categorySlice";
-import Image from "../../components/Image/Image";
-import ConfirmDeleteModal from "../../components/CommonDeleteModel/CommonDeleteModel";
+import Image from "../../components/Container/Image/Image";
+import ConfirmDeleteModal from "../../components/Container/CommonDeleteModel/CommonDeleteModel";
+import { video } from "motion/react-client";
 
 interface CategoryData {
   id: number;
@@ -149,6 +150,7 @@ const Category = () => {
                 isActive: item?.status === 1,
                 slug: item?.slug,
                 image: item?.categoryImage,
+                video: item?.categoryVideo,
               }))
             : []
         }

@@ -92,12 +92,12 @@ const SideBar: React.FC = () => {
       }`}
     >
       <div
-        className={`flex items-center ${isHovered ? "justify-start px-6" : "justify-center"} h-16 border-b ${
+        className={`flex items-center ${isHovered ? "justify-start px-6" : "justify-center"} h-19 border-b ${
           isDarkMode ? "border-gray-800" : "border-gray-200"
         }`}
       >
         {isHovered ? (
-          <img src={nowkartLogo} alt="Nowkart Logo" className="h-8 w-auto" />
+          <img src={nowkartLogo} alt="Nowkart Logo" className="h-15 w-auto" />
         ) : (
           <div className="w-8 h-8 rounded-lg bg-orange-600 flex items-center justify-center text-white font-bold">
             N

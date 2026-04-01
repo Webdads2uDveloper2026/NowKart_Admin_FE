@@ -16,7 +16,6 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 
-// Define types for Redux state
 interface DarkModeState {
   isDarkMode: boolean;
 }
@@ -884,11 +883,13 @@ const Table = <T extends Record<string, any>>({
                 <motion.tr variants={rowVariants}>
                   <td colSpan={columns.length} className="px-4 py-12">
                     <motion.div
-                      variants={loadingVariants}
                       animate="animate"
                       className="flex flex-col items-center justify-center space-y-2"
                     >
-                      <Loader2 className={`w-8 h-8 text-orange-600`} />
+                      <motion.span variants={loadingVariants}>
+                        <Loader2 className={`w-8 h-8 text-orange-600`} />
+                      </motion.span>
+
                       <p
                         className={
                           isDarkMode ? "text-gray-400" : "text-gray-500"

@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Table from "../../components/Table/Table";
-import type { Column } from "../../components/Table/Table";
+import Table from "../../components/Container/Table/Table";
+import type { Column } from "../../components/Container/Table/Table";
 import CreateCategoryModal from "./CreateSubCategoryModal";
 import {
   clearSubcategoryState,
   deleteSubcategory,
   getSubcategories,
 } from "../../store/slice/subcategorySlice";
-import ConfirmDeleteModal from "../../components/CommonDeleteModel/CommonDeleteModel";
+import ConfirmDeleteModal from "../../components/Container/CommonDeleteModel/CommonDeleteModel";
 
 interface CategoryData {
   id: number;

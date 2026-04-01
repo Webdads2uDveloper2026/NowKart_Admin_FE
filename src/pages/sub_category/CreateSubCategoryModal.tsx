@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getCategories } from "../../store/slice/categorySlice";
-import SingleSelectDropdown from "../../components/Fields/SingleSelectDropdown";
+import SingleSelectDropdown from "../../components/Container/Fields/SingleSelectDropdown";
 import {
   createSubcategory,
   updateSubcategory,
 } from "../../store/slice/subcategorySlice";
+import Button from "../../components/Container/Button/Button";
 
 const CreateSubCategoryModal = ({ onClose, data }: any) => {
   const dispatch = useDispatch();
@@ -90,18 +91,11 @@ const CreateSubCategoryModal = ({ onClose, data }: any) => {
           />
         </div>
         <div className="flex justify-end gap-3 pt-2">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 cursor-pointer"
-          >
+          <Button variant="secondary" onClick={onClose}>
             Cancel
-          </button>
+          </Button>
 
-          <button
-            onClick={handleSubmit}
-            disabled={loading}
-            className="bg-orange-600 text-white px-5 py-2 rounded-lg hover:bg-orange-700 disabled:opacity-50 cursor-pointer"
-          >
+          <Button onClick={handleSubmit} disabled={loading}>
             {loading
               ? isEdit
                 ? "Updating..."
@@ -109,7 +103,7 @@ const CreateSubCategoryModal = ({ onClose, data }: any) => {
               : isEdit
                 ? "Update"
                 : "Create"}
-          </button>
+          </Button>
         </div>
       </div>
     </div>
