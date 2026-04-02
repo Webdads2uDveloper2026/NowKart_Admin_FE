@@ -29,7 +29,6 @@ const SubCategory = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState<any>(null);
 
-  console.log(success);
 
   useEffect(() => {
     dispatch(getSubcategories() as any);
