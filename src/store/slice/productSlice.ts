@@ -10,7 +10,7 @@ export const createProduct = createAsyncThunk(
         method: "POST",
         body: formData,
       });
-      return res?.data;
+      return res;
     } catch (err: any) {
       return rejectWithValue(
         err?.response?.data?.message || "Create product failed",

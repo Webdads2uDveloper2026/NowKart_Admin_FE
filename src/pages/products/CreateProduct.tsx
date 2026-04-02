@@ -173,6 +173,7 @@ const CreateProduct = ({ onclose, data }: any) => {
 
   useEffect(() => {
     if (createSuccess) {
+      onclose();
       showPopup("success", createSuccess);
       dispatch(getProducts() as any);
       dispatch(clearProductState());

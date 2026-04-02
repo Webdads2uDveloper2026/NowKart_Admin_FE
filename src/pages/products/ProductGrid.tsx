@@ -26,19 +26,16 @@ export const ProductGrid: React.FC<Props> = ({
   onDelete,
 }) => {
   const [search, setSearch] = useState<string>("");
-
   const filteredProducts = products?.filter((item) =>
     item.name.toLowerCase().includes(search.toLowerCase()),
   );
 
   const handleEdit = (item: Product) => {
     if (onEdit) onEdit(item);
-    else console.log("Edit:", item);
   };
 
   const handleDelete = (item: Product) => {
     if (onDelete) onDelete(item);
-    else console.log("Delete:", item);
   };
 
   return (
@@ -50,7 +47,7 @@ export const ProductGrid: React.FC<Props> = ({
             placeholder="Search..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl text-sm outline-none focus:border-green-500"
+            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl text-sm outline-none "
           />
           <Search
             size={16}
