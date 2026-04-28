@@ -103,3 +103,10 @@ export interface CoreState {
   barcode: string;
   tags: string;
 }
+
+export type Subcategory = {
+  name: string;
+  slug: string;
+  description?: string;
+};
+

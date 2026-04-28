@@ -11,6 +11,7 @@ import { ProductGrid } from "./ProductGrid";
 import CreateProduct from "./CreateProduct";
 import ConfirmDeleteModal from "../../components/Container/CommonDeleteModel/CommonDeleteModel";
 import { usePopup } from "../../components/Container/Popup/PopupProvider";
+import Image from "../../components/Container/Image/Image";
 
 const Products = () => {
   const dispatch = useDispatch();
@@ -72,7 +73,7 @@ const Products = () => {
       width: "100px",
       align: "center",
       accessor: (row: any) => (
-        <img src={row.image} className="w-12 h-12 object-cover rounded-md" />
+        <Image src={row.image} className="w-12 h-12 object-cover rounded-md" />
       ),
     },
     {
@@ -118,9 +119,9 @@ const Products = () => {
           _id: item?._id,
           name: item?.name,
           stock: item?.stock?.quantity,
-          price: item?.price,
+          price: item?.price?.price || 0,
           category: item?.category?.name,
-          image: item?.productImage,
+          image: item?.images?.[0] || "",
           productData: item,
         }))
       : [];

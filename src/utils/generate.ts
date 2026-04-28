@@ -24,3 +24,10 @@ export const generateAltTags = (name: string, count: number) => {
     (_, i) => `${name.toLowerCase()} image ${i + 1}`,
   );
 };
+
+
+ export const getStockStatus = (qty: number) => {
+  if (qty === 0) return "OUT_OF_STOCK";
+  if (qty <= 5) return "LIMITED";
+  return "IN_STOCK";
+};

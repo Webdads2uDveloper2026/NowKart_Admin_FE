@@ -10,10 +10,14 @@ import {
 import SingleSelectDropdown from "../../components/Container/Fields/SingleSelectDropdown";
 import FileUpload from "../../components/Container/Fields/FileUpload";
 import Button from "../../components/Container/Button/Button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Trash2 } from "lucide-react";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import { generateAltTags, generateSlug } from "../../utils/generate";
+import {
+  generateAltTags,
+  generateSlug,
+  getStockStatus,
+} from "../../utils/generate";
 import { usePopup } from "../../components/Container/Popup/PopupProvider";
 import { AddBtn, Field } from "./Field";
 import type {
@@ -30,6 +34,7 @@ import type {
   WholesaleField,
   CustomVariant,
   BulkDiscount,
+  Subcategory,
 } from "../../utils/ProductSchema";
 import { getSubcategories } from "../../store/slice/subcategorySlice";
 import { DarkInput, FormSection, VariantCard } from "./FormComponents";
@@ -296,9 +301,8 @@ const CreateProduct = ({ onclose, data }: any) => {
   const { subcategories } = useSelector(
     (state: any) => state.subcategory || {},
   );
-  const { createError, createSuccess } = useSelector(
-    (state: any) => state.product,
-  );
+  const { createError, createSuccess, updateSuccess, updateError } =
+    useSelector((state: any) => state.product);
 
   const VARIANT_TYPES: VariantType[] = [
     "NONE",
@@ -313,6 +317,7 @@ const CreateProduct = ({ onclose, data }: any) => {
 
   const [variantType, setVariantType] = useState<VariantType>("NONE");
   const [productImage, setProductImage] = useState<File[]>([]);
+
   const [core, setCore] = useState({
     name: "",
     slug: "",
@@ -323,7 +328,6 @@ const CreateProduct = ({ onclose, data }: any) => {
     brand: "",
     rootSku: "",
     barcode: "",
-    tags: "",
   });
 
   const [rootPrice, setRootPrice] = useState<PriceBlock>(emptyPrice());
@@ -364,15 +368,32 @@ const CreateProduct = ({ onclose, data }: any) => {
   const [wholesaleFields, setWholesaleFields] = useState<WholesaleField[]>([]);
   const [isBulkDiscount, setIsBulkDiscount] = useState(false);
   const [bulkDiscounts, setBulkDiscounts] = useState<BulkDiscount[]>([]);
+  const [keywords, setKeywords] = useState<string[]>([]);
+  const [keywordInput, setKeywordInput] = useState("");
+
+  const [highlights, setHighlights] = useState<string[]>([]);
+  const [highlightInput, setHighlightInput] = useState("");
   const [specifications, setSpecifications] = useState([
     { key: "", value: "" },
   ]);
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState("");
+
+  const normalizedInput: string = tagInput.toLowerCase();
+
+  const tagSuggestions: string[] =
+    (subcategories as Subcategory[] | undefined)
+      ?.map((s) => s?.name?.toLowerCase())
+      .filter((tag): tag is string => Boolean(tag)) || [];
+
+  const filteredTags: string[] = tagSuggestions.filter(
+    (tag: string) => tag.includes(normalizedInput) && !tags.includes(tag),
+  );
+
   const [seo, setSeo] = useState({
     metaTitle: "",
     metaDescription: "",
-    keywords: "",
     canonicalTag: "",
-    highlights: "",
     returnPolicy: "",
     warrantyInfo: "",
   });
@@ -388,21 +409,115 @@ const CreateProduct = ({ onclose, data }: any) => {
   }, []);
 
   useEffect(() => {
-    if (data) {
-      setCore({
-        name: data?.name || "",
-        slug: data?.slug || "",
-        shortDescription: data?.shortDescription || "",
-        description: data?.description || "",
-        category: data?.category || "",
-        subCategory: data?.subCategory || "",
-        brand: data?.brand || "",
-        // plan: data?.plan || "",
-        rootSku: data?.rootSku || "",
-        barcode: data?.barcode || "",
-        tags: data?.tags?.join(", ") || "",
+    if (!data) return;
+
+    setCore({
+      name: data?.name || "",
+      slug: data?.slug || "",
+      shortDescription: data?.shortDescription || "",
+      description: data?.description || "",
+      category: data?.category?._id || "",
+      subCategory: data?.subCategory?._id || "",
+      brand: data?.brand || "",
+      rootSku: data?.rootSku || "",
+      barcode: data?.barcode || "",
+    });
+
+    const cleanTags = (data?.tags || []).map((t: string) =>
+      t.replace(/[\[\]\"]/g, "").trim(),
+    );
+    setTags(cleanTags);
+
+    if (data?.variantType === "COLOR") {
+      const mapped = data.colorVariants.map((v: any) => ({
+        colorName: v.colorName || "",
+        colorCode: v.colorCode || "#000000",
+        images: [],
+        price: {
+          price: v.price?.price || "",
+          strikeoutPrice: v.price?.strikeoutPrice || "",
+          wholesalePrice: v.price?.wholesalePrice || "",
+          costPrice: v.price?.costPrice || "",
+        },
+        stock: {
+          quantity: v.stock?.quantity || "",
+          sku: v.stock?.sku || "",
+          barcode: v.stock?.barcode || "",
+        },
+        sizes: [],
+      }));
+      setColorVariants(mapped);
+    }
+
+    setVariantType(data?.variantType || "NONE");
+
+    if (data?.specifications?.length) {
+      setSpecifications(
+        data.specifications.map((s: any) => ({
+          key: s.key || "",
+          value: s.value || "",
+        })),
+      );
+    } else {
+      setSpecifications([{ key: "", value: "" }]);
+    }
+
+    setFlags({
+      bestSelling: data?.bestSelling || false,
+      trending: data?.trending || false,
+      isFeatured: data?.isFeatured || false,
+      isNewArrival: data?.isNewArrival || false,
+      isCustomized: data?.isCustomized || false,
+      isInquiry: data?.isInquiry || false,
+    });
+    const cleanArray = (arr: any) =>
+      Array.isArray(arr)
+        ? arr.map((i) => i.replace(/[\[\]\"]/g, "").trim())
+        : [];
+
+    setKeywords(cleanArray(data?.keywords));
+    setHighlights(cleanArray(data?.highlights));
+
+    setSeo({
+      metaTitle: data?.metaTitle || "",
+      metaDescription: data?.metaDescription || "",
+      returnPolicy: data?.returnPolicy || "",
+      warrantyInfo: data?.warrantyInfo || "",
+      canonicalTag: data?.canonicalTag || "",
+    });
+
+    setVideoUrl(data?.videoUrl || "");
+    setIsWholesale(data?.isWholesale || false);
+    setWholesaleMinQty(data?.wholesaleMinQuantity || "");
+    setWholesaleFields(data?.wholesaleFields || []);
+    setIsBulkDiscount(data?.isBulkDiscount || false);
+    setBulkDiscounts(data?.bulkDiscounts || []);
+
+    if (data?.price) {
+      setRootPrice({
+        price: data.price.price || "",
+        strikeoutPrice: data.price.strikeoutPrice || "",
+        wholesalePrice: data.price.wholesalePrice || "",
+        costPrice: data.price.costPrice || "",
       });
-      if (data?.variantType) setVariantType(data?.variantType);
+    }
+
+    if (data?.stock) {
+      setRootStock({
+        quantity: data.stock.quantity || "",
+        sku: data.stock.sku || "",
+        barcode: data.stock.barcode || "",
+      });
+    }
+
+    if (data?.shipping) {
+      setRootShipping({
+        weight: data.shipping.weight || "",
+        weightUnit: data.shipping.weightUnit || "kg",
+        length: data.shipping.length || "",
+        width: data.shipping.width || "",
+        height: data.shipping.height || "",
+      });
     }
   }, [data]);
 
@@ -489,41 +604,55 @@ const CreateProduct = ({ onclose, data }: any) => {
       ),
     );
 
-  const toArray = (val: string) =>
-    val
-      ? val
-          .split(",")
-          .map((t) => t.trim())
-          .filter(Boolean)
-      : [];
-
   const hasValues = (obj: Record<string, any>) =>
     Object.values(obj).some((v) => v !== "");
 
-  console.log(wholesaleMinQty);
+  const addTag = (value: string) => {
+    const normalized = value?.toLowerCase().trim();
+    if (!normalized || tags.includes(normalized)) return;
+    setTags([...tags, normalized]);
+    setTagInput("");
+  };
+
+  const addKeyword = (value: string) => {
+    const v = value.toLowerCase().trim();
+    if (!v || keywords.includes(v)) return;
+    setKeywords([...keywords, v]);
+    setKeywordInput("");
+  };
+
+  const addHighlight = (value: string) => {
+    const v = value.toLowerCase().trim();
+    if (!v || highlights.includes(v)) return;
+    setHighlights([...highlights, v]);
+    setHighlightInput("");
+  };
 
   const handleSubmit = () => {
     if (!core.name) return showPopup("error", "Product name required");
     if (!core.category) return showPopup("error", "Category required");
     // if (!core.plan) return showPopup("error", "Plan required");
-    if (!productImage.length)
+    if (!productImage.length && !data?.images?.length) {
       return showPopup("error", "At least 1 product image required");
+    }
 
     const fd = new FormData();
     fd.append("variantType", variantType);
 
     Object.entries(core).forEach(([k, v]) => v && fd.append(k, v));
-    fd.append("tags", JSON.stringify(toArray(core.tags)));
+    fd.append("tags", JSON.stringify(tags));
     Object.entries(flags).forEach(([k, v]) => fd.append(k, String(v)));
 
     if (seo.metaTitle) fd.append("metaTitle", seo.metaTitle);
     if (seo.metaDescription) fd.append("metaDescription", seo.metaDescription);
 
-    if (seo.keywords)
-      fd.append("keywords", JSON.stringify(toArray(seo.keywords)));
+    if (keywords.length) {
+      fd.append("keywords", JSON.stringify(keywords));
+    }
 
-    if (seo.highlights)
-      fd.append("highlights", JSON.stringify(toArray(seo.highlights)));
+    if (highlights.length) {
+      fd.append("highlights", JSON.stringify(highlights));
+    }
 
     if (seo.returnPolicy) fd.append("returnPolicy", seo.returnPolicy);
     if (seo.warrantyInfo) fd.append("warrantyInfo", seo.warrantyInfo);
@@ -557,7 +686,13 @@ const CreateProduct = ({ onclose, data }: any) => {
 
     if (variantType === "NONE" && !flags.isInquiry) {
       fd.append("price", JSON.stringify(rootPrice));
-      fd.append("stock", JSON.stringify(rootStock));
+      const stockPayload = {
+        quantity: Number(rootStock.quantity) || 0,
+        stockStatus: getStockStatus(Number(rootStock.quantity)),
+        sku: rootStock.sku || "",
+        barcode: rootStock.barcode || "",
+      };
+      fd.append("stock", JSON.stringify(stockPayload));
 
       if (hasValues(rootShipping)) {
         fd.append("shipping", JSON.stringify(rootShipping));
@@ -611,6 +746,19 @@ const CreateProduct = ({ onclose, data }: any) => {
       dispatch(clearProductState());
     }
   }, [createSuccess, createError]);
+
+  useEffect(() => {
+    if (updateSuccess) {
+      onclose();
+      showPopup("success", updateSuccess);
+      dispatch(getProducts() as any);
+      dispatch(clearProductState());
+    }
+    if (updateError) {
+      showPopup("error", updateError);
+      dispatch(clearProductState());
+    }
+  }, [updateSuccess, updateError]);
 
   return (
     <div className="px-20 py-6  mx-auto">
@@ -682,6 +830,7 @@ const CreateProduct = ({ onclose, data }: any) => {
               required
               hint="Billing = activeProducts × pricePerProduct"
             >
+
               <select
                 value={core.plan}
                 onChange={(e) =>
@@ -753,22 +902,62 @@ const CreateProduct = ({ onclose, data }: any) => {
             multiple
             setValue={(files) => setProductImage(files as File[])}
           />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 items-center">
             <DarkInput
               label="Video URL"
               value={videoUrl}
               onChange={(e) => setVideoUrl(e.target.value)}
               placeholder="https://youtube.com/watch?v=..."
             />
+
             <div>
-              <DarkInput
-                name="tags"
-                label="Tags"
-                value={core.tags}
-                onChange={handleCoreChange}
-                placeholder="cotton, summer, unisex, casual"
-                hint="Comma-separated · used for full-text search indexing"
+              <label className="text-sm font-medium text-gray-700">Tags</label>
+              <input
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    addTag(tagInput);
+                  }
+                }}
+                placeholder="Type and press Enter..."
+                className={inputCls}
               />
+
+              {tagInput && filteredTags.length > 0 && (
+                <div className="border mt-1 rounded bg-white shadow">
+                  {filteredTags.map((tag) => (
+                    <div
+                      key={tag}
+                      onClick={() => {
+                        setTags([...tags, tag]);
+                        setTagInput("");
+                      }}
+                      className="px-3 py-1 cursor-pointer hover:bg-gray-100"
+                    >
+                      {tag}
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="flex flex-wrap gap-2 mt-2">
+                {tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="px-2 py-1 bg-orange-100 text-orange-600 rounded flex items-center gap-1"
+                  >
+                    {tag}
+                    <button
+                      type="button"
+                      className="cursor-pointer"
+                      onClick={() => setTags(tags.filter((t) => t !== tag))}
+                    >
+                      ✕
+                    </button>
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </FormSection>
@@ -1775,25 +1964,76 @@ const CreateProduct = ({ onclose, data }: any) => {
               </Field>
             </div>
             <div className="md:col-span-2">
-              <DarkInput
-                label="Keywords"
-                value={seo.keywords}
-                onChange={(e) =>
-                  setSeo((p) => ({ ...p, keywords: e.target.value }))
-                }
-                placeholder="t-shirt, cotton, casual wear"
-              />
+              <div>
+                <label>Keywords</label>
+                <input
+                  value={keywordInput}
+                  onChange={(e) => setKeywordInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && keywordInput.trim()) {
+                      e.preventDefault();
+                      addKeyword(keywordInput);
+                    }
+                  }}
+                  placeholder="Type and press Enter..."
+                  className={inputCls}
+                />
+
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {keywords.map((k) => (
+                    <span
+                      key={k}
+                      className="px-2 py-1 bg-blue-100 rounded flex gap-1 capitalize"
+                    >
+                      {k}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setKeywords(keywords.filter((x) => x !== k))
+                        }
+                      >
+                        ✕
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
             <div className="md:col-span-2">
-              <DarkInput
-                label="Highlights"
-                value={seo.highlights}
-                onChange={(e) =>
-                  setSeo((p) => ({ ...p, highlights: e.target.value }))
-                }
-                placeholder="100% organic cotton, Pre-shrunk, Machine washable"
-                hint="Comma-separated bullet features"
-              />
+              <div>
+                <label>Highlights</label>
+                <input
+                  value={highlightInput}
+                  onChange={(e) => setHighlightInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && highlightInput.trim()) {
+                      e.preventDefault();
+                      addHighlight(highlightInput);
+                    }
+                  }}
+                  placeholder="Type and press Enter..."
+                  className={inputCls}
+                />
+
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {highlights.map((h) => (
+                    <span
+                      key={h}
+                      className="px-2 py-1 bg-green-100 rounded flex gap-1 capitalize"
+                    >
+                      {h}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setHighlights(highlights.filter((x) => x !== h))
+                        }
+                      >
+                        ✕
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
             <Field label="Return Policy">
               <textarea
@@ -1822,42 +2062,51 @@ const CreateProduct = ({ onclose, data }: any) => {
                 {specifications.map((spec, i) => (
                   <div key={i} className="flex gap-2 mb-2">
                     <input
-                      className={inputCls}
-                      placeholder="Key"
                       value={spec.key}
-                      onChange={(e) =>
-                        setSpecifications((prev) =>
-                          prev.map((s, j) =>
-                            j === i ? { ...s, key: e.target.value } : s,
-                          ),
-                        )
-                      }
+                      onChange={(e) => {
+                        const updated = [...specifications];
+                        updated[i].key = e.target.value;
+                        setSpecifications(updated);
+                      }}
+                      placeholder="Key (e.g. Material)"
+                      className="border p-2 w-1/2 border-gray-400 rounded-md"
                     />
+
                     <input
-                      className={inputCls}
-                      placeholder="Value"
                       value={spec.value}
-                      onChange={(e) =>
-                        setSpecifications((prev) =>
-                          prev.map((s, j) =>
-                            j === i ? { ...s, value: e.target.value } : s,
-                          ),
+                      onChange={(e) => {
+                        const updated = [...specifications];
+                        updated[i].value = e.target.value;
+                        setSpecifications(updated);
+                      }}
+                      placeholder="Value (e.g. Cotton)"
+                      className="border p-2 w-1/2  border-gray-400 rounded-md"
+                    />
+
+                    <button
+                      type="button"
+                      title="Delete"
+                      onClick={() =>
+                        setSpecifications(
+                          specifications.filter((_, idx) => idx !== i),
                         )
                       }
-                    />
+                    >
+                      <Trash2 />
+                    </button>
                   </div>
                 ))}
 
                 <button
                   type="button"
                   onClick={() =>
-                    setSpecifications((prev) => [
-                      ...prev,
+                    setSpecifications([
+                      ...specifications,
                       { key: "", value: "" },
                     ])
                   }
                 >
-                  + Add
+                  + Add Specification
                 </button>
               </Field>
             </div>

@@ -65,7 +65,7 @@ export const updateProduct = createAsyncThunk(
         method: "PATCH",
         body: formData,
       });
-      return res.data;
+      return res;
     } catch (err: any) {
       return rejectWithValue(
         err?.response?.data?.message || "Update product failed",
@@ -113,7 +113,7 @@ const productSlice = createSlice({
   initialState: {
     loading: false,
     createSuccess: false,
-    updateSuccess: false,
+    updateSuccess: null,
     deleteSuccess: false,
     createError: null as any,
     fetchError: null as any,
@@ -126,7 +126,7 @@ const productSlice = createSlice({
   reducers: {
     clearProductState: (state) => {
       state.createSuccess = false;
-      state.updateSuccess = false;
+      state.updateSuccess = null;
       state.deleteSuccess = false;
       state.createError = null;
       state.fetchError = null;
@@ -170,11 +170,11 @@ const productSlice = createSlice({
       .addCase(updateProduct.pending, (state) => {
         state.loading = true;
         state.updateError = null;
-        state.updateSuccess = false;
+        state.updateSuccess = null;
       })
-      .addCase(updateProduct.fulfilled, (state) => {
+      .addCase(updateProduct.fulfilled, (state, action) => {
         state.loading = false;
-        state.updateSuccess = true;
+        state.updateSuccess = action.payload.message;
       })
       .addCase(updateProduct.rejected, (state, action) => {
         state.loading = false;
