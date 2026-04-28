@@ -12,6 +12,7 @@ import CreateProduct from "./CreateProduct";
 import ConfirmDeleteModal from "../../components/Container/CommonDeleteModel/CommonDeleteModel";
 import { usePopup } from "../../components/Container/Popup/PopupProvider";
 import Image from "../../components/Container/Image/Image";
+import { getVariantData } from "../../utils/getVariantData";
 
 const Products = () => {
   const dispatch = useDispatch();
@@ -115,29 +116,14 @@ const Products = () => {
 
   const formattedProducts =
     productData?.map((item: any) => {
-      let price = 0;
-      let stock = 0;
-      let image = "";
-
-      if (item.variantType === "NONE") {
-        price = item?.price?.price || 0;
-        stock = item?.stock?.quantity || 0;
-        image = item?.images?.[0] || "";
-      }
-
-      if (item.variantType === "COLOR") {
-        const firstVariant = item?.colorVariants?.[0];
-        price = firstVariant?.price?.price || 0;
-        stock = firstVariant?.stock?.quantity || 0;
-        image = firstVariant?.images?.[0] || item?.images?.[0] || "";
-      }
+      const { price, stock, image } = getVariantData(item);
       return {
         _id: item._id,
         name: item.name,
         category: item?.category?.name,
         price,
         stock,
-        image,
+        image: image || "/fallback.png",
         productData: item,
       };
     }) || [];

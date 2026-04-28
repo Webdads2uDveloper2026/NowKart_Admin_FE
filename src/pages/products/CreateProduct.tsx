@@ -449,6 +449,119 @@ const CreateProduct = ({ onclose, data }: any) => {
       setColorVariants(mapped);
     }
 
+    if (data?.variantType === "SIZE") {
+      const mapped = data.sizeVariants.map((v: any) => ({
+        size: v.size || "",
+        price: {
+          price: String(v.price?.price ?? ""),
+          strikeoutPrice: String(v.price?.strikeoutPrice ?? ""),
+          wholesalePrice: String(v.price?.wholesalePrice ?? ""),
+          costPrice: String(v.price?.costPrice ?? ""),
+        },
+        stock: {
+          quantity: String(v.stock?.quantity ?? ""),
+          sku: v.stock?.sku || "",
+          barcode: v.stock?.barcode || "",
+        },
+        shipping: {
+          weight: String(v.shipping?.weight ?? ""),
+          weightUnit: v.shipping?.weightUnit || "kg",
+          length: String(v.shipping?.length ?? ""),
+          width: String(v.shipping?.width ?? ""),
+          height: String(v.shipping?.height ?? ""),
+        },
+      }));
+      setSizeVariants(mapped);
+    }
+
+    if (data?.variantType === "WEIGHT") {
+      const mapped = data.weightVariants.map((v: any) => ({
+        weightValue: String(v.weightValue ?? ""),
+        weightUnit: v.weightUnit || "g",
+        label: v.label || "",
+        price: {
+          price: String(v.price?.price ?? ""),
+          strikeoutPrice: String(v.price?.strikeoutPrice ?? ""),
+          wholesalePrice: String(v.price?.wholesalePrice ?? ""),
+          costPrice: String(v.price?.costPrice ?? ""),
+        },
+        stock: {
+          quantity: String(v.stock?.quantity ?? ""),
+          sku: v.stock?.sku || "",
+          barcode: v.stock?.barcode || "",
+        },
+      }));
+
+      setWeightVariants(mapped);
+    }
+
+    if (data?.variantType === "VOLUME") {
+      const mapped = data.volumeVariants.map((v: any) => ({
+        volumeValue: String(v.volumeValue ?? ""),
+        volumeUnit: v.volumeUnit || "ml",
+        label: v.label || "",
+        price: {
+          price: String(v.price?.price ?? ""),
+          strikeoutPrice: String(v.price?.strikeoutPrice ?? ""),
+          wholesalePrice: String(v.price?.wholesalePrice ?? ""),
+          costPrice: String(v.price?.costPrice ?? ""),
+        },
+        stock: {
+          quantity: String(v.stock?.quantity ?? ""),
+          sku: v.stock?.sku || "",
+          barcode: v.stock?.barcode || "",
+        },
+      }));
+
+      setVolumeVariants(mapped);
+    }
+
+    if (data?.variantType === "UNIT") {
+      const mapped = data.unitVariants.map((v: any) => ({
+        unitLabel: v.unitLabel || "",
+        unitCount: String(v.unitCount ?? ""),
+        price: {
+          price: String(v.price?.price ?? ""),
+          strikeoutPrice: String(v.price?.strikeoutPrice ?? ""),
+          wholesalePrice: String(v.price?.wholesalePrice ?? ""),
+          costPrice: String(v.price?.costPrice ?? ""),
+        },
+        stock: {
+          quantity: String(v.stock?.quantity ?? ""),
+          sku: v.stock?.sku || "",
+          barcode: v.stock?.barcode || "",
+        },
+      }));
+
+      setUnitVariants(mapped);
+    }
+
+    if (data?.variantType === "CUSTOM") {
+      const mapped = data.customVariants.map((v: any) => ({
+        label: v.label || "",
+        attributes: v.attributes || [{ key: "", value: "" }],
+        price: {
+          price: v.price?.price || "",
+          strikeoutPrice: v.price?.strikeoutPrice || "",
+          wholesalePrice: v.price?.wholesalePrice || "",
+          costPrice: v.price?.costPrice || "",
+        },
+        stock: {
+          quantity: v.stock?.quantity || "",
+          sku: v.stock?.sku || "",
+          barcode: v.stock?.barcode || "",
+        },
+        shipping: {
+          weight: v.shipping?.weight || "",
+          weightUnit: v.shipping?.weightUnit || "kg",
+          length: v.shipping?.length || "",
+          width: v.shipping?.width || "",
+          height: v.shipping?.height || "",
+        },
+      }));
+
+      setCustomVariants(mapped);
+    }
     setVariantType(data?.variantType || "NONE");
 
     if (data?.specifications?.length) {
@@ -698,12 +811,31 @@ const CreateProduct = ({ onclose, data }: any) => {
         fd.append("shipping", JSON.stringify(rootShipping));
       }
     }
+
     if (variantType === "COLOR" || variantType === "COLOR_SIZE") {
-      const payload = colorVariants.map(({ images, ...rest }) => ({
-        ...rest,
+      const payload = colorVariants.map((v) => ({
+        colorName: v.colorName,
+        colorCode: v.colorCode,
+        price: v.price,
+        stock: {
+          ...v.stock,
+          quantity: Number(v.stock.quantity) || 0,
+          stockStatus: getStockStatus(Number(v.stock.quantity)),
+        },
+
+        sizes: (v.sizes || []).map((s) => ({
+          size: s.size,
+          price: s.price,
+          stock: {
+            ...s.stock,
+            quantity: Number(s.stock.quantity) || 0,
+            stockStatus: getStockStatus(Number(s.stock.quantity)),
+          },
+        })),
+
         imageAltTags: generateAltTags(
-          rest.colorName || core.name,
-          images.length,
+          v.colorName || core.name,
+          v.images.length,
         ),
       }));
 
@@ -711,7 +843,7 @@ const CreateProduct = ({ onclose, data }: any) => {
 
       colorVariants.forEach((v, i) => {
         v.images.forEach((img) => {
-          fd.append(`colorImages_${i}`, img);
+          fd.append(`colorVariants[${i}][colorImage][]`, img);
         });
       });
     } else if (variantType === "SIZE") {
