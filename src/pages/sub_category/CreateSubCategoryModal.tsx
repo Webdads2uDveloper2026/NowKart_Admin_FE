@@ -10,7 +10,7 @@ import Button from "../../components/Container/Button/Button";
 
 const CreateSubCategoryModal = ({ onClose, data }: any) => {
   const dispatch = useDispatch();
-  const { categories, loading } = useSelector(
+  const { categories, updateLoading } = useSelector(
     (state: any) => state.category || {},
   );
   const isEdit = !!data;
@@ -18,6 +18,7 @@ const CreateSubCategoryModal = ({ onClose, data }: any) => {
   const [form, setForm] = useState({
     subCategory: "",
     description: "",
+    status: 1,
   });
 
   useEffect(() => {
@@ -29,6 +30,7 @@ const CreateSubCategoryModal = ({ onClose, data }: any) => {
       setForm({
         subCategory: data?.name || "",
         description: data?.description || "",
+        status: data?.status || 1,
       });
       setSelectedCategory(data?.category?._id || "");
     }
@@ -42,6 +44,7 @@ const CreateSubCategoryModal = ({ onClose, data }: any) => {
     const payload: any = {
       subCategory: form.subCategory,
       description: form.description,
+      status: form.status,
     };
     if (selectedCategory) {
       payload.category = selectedCategory;
@@ -90,13 +93,41 @@ const CreateSubCategoryModal = ({ onClose, data }: any) => {
             onChange={(e) => setForm({ ...form, description: e.target.value })}
           />
         </div>
+        <label className="flex items-center justify-end cursor-pointer ">
+          <div className="relative">
+            <input
+              type="checkbox"
+              className="sr-only"
+              checked={form.status === 1}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  status: e.target.checked ? 1 : 0,
+                })
+              }
+            />
+            <div
+              className={`w-10 h-5 rounded-full transition ${
+                form.status === 1 ? "bg-green-500" : "bg-gray-300"
+              }`}
+            ></div>
+            <div
+              className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transform transition ${
+                form.status === 1 ? "translate-x-5" : ""
+              }`}
+            ></div>
+          </div>
+          <span className="ml-3 text-sm text-gray-700">
+            {form.status === 1 ? "Active" : "Inactive"}
+          </span>
+        </label>
         <div className="flex justify-end gap-3 pt-2">
           <Button variant="secondary" onClick={onClose}>
             Cancel
           </Button>
 
-          <Button onClick={handleSubmit} disabled={loading}>
-            {loading
+          <Button onClick={handleSubmit} disabled={updateLoading}>
+            {updateLoading
               ? isEdit
                 ? "Updating..."
                 : "Creating..."

@@ -67,7 +67,7 @@ const CreateCategoryModal = ({ onClose, data }: any) => {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-white p-6 rounded-xl w-[422px] space-y-4 shadow-xl"
+        className="bg-white px-10 py-4 rounded-xl w-[500px] space-y-2 shadow-xl"
       >
         <h2 className="text-xl font-bold text-gray-800 text-center">
           {isEdit ? "Update Category" : "Create Category"}
@@ -84,6 +84,22 @@ const CreateCategoryModal = ({ onClose, data }: any) => {
           value={form.description}
           onChange={(e) => setForm({ ...form, description: e.target.value })}
         />
+        <div className="flex justify-end">
+          <div className="flex items-center gap-3 ">
+            <span className="text-sm text-gray-700">Top Category</span>
+            <input
+              type="checkbox"
+              checked={form.isTopCategory}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  isTopCategory: e.target.checked,
+                })
+              }
+              className="w-4 h-4 accent-green-600 cursor-pointer"
+            />
+          </div>
+        </div>
         <FileUpload
           label="Image"
           type="image"

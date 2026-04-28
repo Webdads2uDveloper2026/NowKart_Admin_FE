@@ -7,6 +7,7 @@ import {
   getCategories,
   deleteCategory,
   clearCategoryState,
+  updateCategory,
 } from "../../store/slice/categorySlice";
 import Image from "../../components/Container/Image/Image";
 import ConfirmDeleteModal from "../../components/Container/CommonDeleteModel/CommonDeleteModel";
@@ -18,7 +19,7 @@ interface CategoryData {
   createdAt: string;
   isActive: boolean;
   image?: string;
-  slug?: string;
+  slug?: any;
 }
 
 const Category = () => {
@@ -37,13 +38,13 @@ const Category = () => {
   }, []);
 
   useEffect(() => {
-    if (success && openModal) {
+    if (success) {
       setOpenModal(false);
       setEditData(null);
       dispatch(getCategories() as any);
       dispatch(clearCategoryState());
     }
-  }, [success, openModal]);
+  }, [success]);
 
   const handleConfirmDelete = () => {
     if (selectedRow?.slug) {
@@ -110,7 +111,16 @@ const Category = () => {
         activeLabel: "Active",
         inactiveLabel: "Inactive",
         onToggle: (row: CategoryData, newValue: boolean) => {
-          console.log(`Category ${row.id} status changed:`, newValue);
+          const formData = new FormData();
+          formData.append("name", row.name);
+          formData.append("description", row.description);
+          formData.append("status", newValue ? "1" : "0");
+          dispatch(
+            updateCategory({
+              slug: row.slug,
+              formData,
+            }) as any,
+          );
         },
       },
     },
@@ -150,6 +160,7 @@ const Category = () => {
                 slug: item?.slug,
                 image: item?.categoryImage,
                 video: item?.categoryVideo,
+                isTopCategory: item?.isTopCategory,
               }))
             : []
         }

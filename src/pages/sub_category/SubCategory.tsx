@@ -7,17 +7,20 @@ import {
   clearSubcategoryState,
   deleteSubcategory,
   getSubcategories,
+  updateSubcategory,
 } from "../../store/slice/subcategorySlice";
 import ConfirmDeleteModal from "../../components/Container/CommonDeleteModel/CommonDeleteModel";
 
 interface CategoryData {
-  id: number;
+  id: string;
   name: string;
   description: string;
   createdAt: string;
   isActive: boolean;
-  image?: string;
-  slug?: string;
+  slug: string;
+  category?: {
+    _id: string;
+  };
 }
 
 const SubCategory = () => {
@@ -28,7 +31,6 @@ const SubCategory = () => {
   const [editData, setEditData] = useState<any>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState<any>(null);
-
 
   useEffect(() => {
     dispatch(getSubcategories() as any);
@@ -49,13 +51,13 @@ const SubCategory = () => {
   }, [deleteError, deleteMessage]);
 
   useEffect(() => {
-    if (success && openModal) {
+    if (success) {
       setOpenModal(false);
       setEditData(null);
       dispatch(getSubcategories() as any);
       dispatch(clearSubcategoryState());
     }
-  }, [success, openModal]);
+  }, [success]);
 
   const columns: Column<CategoryData>[] = [
     {
@@ -94,7 +96,19 @@ const SubCategory = () => {
         activeLabel: "Active",
         inactiveLabel: "Inactive",
         onToggle: (row: CategoryData, newValue: boolean) => {
-          console.log(`Category ${row.id} status changed:`, newValue);
+          const payload = {
+            subCategory: row.name,
+            description: row.description,
+            status: newValue ? 1 : 0,
+            category: row.category?._id,
+          };
+
+          dispatch(
+            updateSubcategory({
+              slug: row.slug,
+              payload,
+            }) as any,
+          );
         },
       },
     },

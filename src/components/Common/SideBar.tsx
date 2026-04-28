@@ -137,7 +137,11 @@ const SideBar: React.FC = () => {
                     onClick={() => toggleItem(item.name)}
                     className={`flex items-center ${
                       !isHovered ? "justify-center" : "justify-start"
-                    } p-3 rounded-lg cursor-pointer`}
+                    } p-3 rounded-lg cursor-pointer ${
+                      isDarkMode
+                        ? "text-gray-400 hover:bg-gray-800 hover:text-gray-200"
+                        : "text-gray-600 hover:bg-orange-50 hover:text-orange-600"
+                    }`}
                   >
                     <Icon className="w-5 h-5" />
 

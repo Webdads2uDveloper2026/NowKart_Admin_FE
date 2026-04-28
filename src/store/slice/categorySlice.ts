@@ -6,7 +6,7 @@ export const createCategory = createAsyncThunk(
   async (formData: FormData, { rejectWithValue }) => {
     try {
       const res = await Fetch({
-        endpoint: "/admin/catgeory",
+        endpoint: "/admin/category",
         method: "POST",
         body: formData,
       });
@@ -22,10 +22,10 @@ export const getCategories = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res = await Fetch({
-        endpoint: "/admin/catgeory",
+        endpoint: "/admin/category",
         method: "GET",
       });
-      return res.data;
+      return res?.data;
     } catch (err: any) {
       return rejectWithValue(err.message || "Error");
     }
@@ -37,7 +37,7 @@ export const deleteCategory = createAsyncThunk(
   async (slug: string, { rejectWithValue }) => {
     try {
       await Fetch({
-        endpoint: `/admin/catgeory/${slug}`,
+        endpoint: `/admin/category/${slug}`,
         method: "DELETE",
       });
       return slug;
@@ -55,7 +55,7 @@ export const updateCategory = createAsyncThunk(
   ) => {
     try {
       const res = await Fetch({
-        endpoint: `/admin/catgeory/${slug}`,
+        endpoint: `/admin/category/${slug}`,
         method: "PATCH",
         body: formData,
       });
@@ -99,7 +99,7 @@ const categorySlice = createSlice({
       })
       .addCase(getCategories.fulfilled, (state, action) => {
         state.loading = false;
-        state.categories = action.payload;
+        state.categories = action.payload?.categoriesWithProductCount;
       })
       .addCase(getCategories.rejected, (state, action) => {
         state.loading = false;

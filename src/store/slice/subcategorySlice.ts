@@ -70,6 +70,7 @@ const subcategorySlice = createSlice({
   name: "subcategory",
   initialState: {
     loading: false,
+    updateLoading: false,
     error: null as any,
     success: false,
     deleteMessage: null as any,
@@ -85,16 +86,16 @@ const subcategorySlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(createSubcategory.pending, (state) => {
-        state.loading = true;
+        state.updateLoading = true;
         state.success = false;
       })
       .addCase(createSubcategory.fulfilled, (state, action) => {
-        state.loading = false;
+        state.updateLoading = false;
         state.success = true;
         state.subcategories.push(action.payload);
       })
       .addCase(createSubcategory.rejected, (state, action) => {
-        state.loading = false;
+        state.updateLoading = false;
         state.error = action.payload;
       })
 
@@ -123,15 +124,15 @@ const subcategorySlice = createSlice({
       })
 
       .addCase(updateSubcategory.pending, (state) => {
-        state.loading = true;
+        state.updateLoading = true;
         state.success = false;
       })
       .addCase(updateSubcategory.fulfilled, (state) => {
-        state.loading = false;
+        state.updateLoading = false;
         state.success = true;
       })
       .addCase(updateSubcategory.rejected, (state, action) => {
-        state.loading = false;
+        state.updateLoading = false;
         state.error = action.payload;
       });
   },

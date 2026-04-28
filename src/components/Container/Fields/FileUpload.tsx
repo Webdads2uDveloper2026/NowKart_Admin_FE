@@ -112,7 +112,7 @@ const FileUpload = ({
           {preview.map((src, i) => (
             <div key={i} className="relative border border-gray-300 rounded p-1 bg-white">
               {type === "image" ? (
-                <img src={src} className="h-20 w-24 object-cover rounded" />
+                <img src={src} className="h-15 w-24 object-cover rounded" />
               ) : (
                 <video src={src} className="h-20 rounded" controls />
               )}

@@ -117,8 +117,8 @@ const Products = () => {
       ? productData?.map((item: any) => ({
           _id: item?._id,
           name: item?.name,
+          stock: item?.stock?.quantity,
           price: item?.price,
-          stock: item?.quantity,
           category: item?.category?.name,
           image: item?.productImage,
           productData: item,

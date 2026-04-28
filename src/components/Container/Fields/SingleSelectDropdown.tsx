@@ -74,11 +74,11 @@ const SingleSelectDropdown: React.FC<SingleSelectDropdownProps> = ({
   return (
     <div className="relative w-full" ref={dropdownRef}>
       {label && (
-        <label className="block text-sm mb-2 text-gray-600">{label}</label>
+        <label className="block text-sm  mb-2 text-gray-600">{label}</label>
       )}
 
       <div
-        className="w-full p-3 border border-gray-400  rounded cursor-pointer 
+        className="w-full p-2 border border-gray-500  rounded-md cursor-pointer  text-sm
         flex items-center justify-between bg-white relative"
         onClick={() => setOpen(!open)}
       >
@@ -120,7 +120,7 @@ const SingleSelectDropdown: React.FC<SingleSelectDropdownProps> = ({
           {filteredOptions.map((item) => (
             <div
               key={item._id}
-              className={`p-2 cursor-pointer hover:bg-gray-100 
+              className={`p-2 cursor-pointer hover:bg-gray-100  
               ${value === item._id ? "bg-gray-200 font-semibold" : ""}`}
               onClick={() => handleSelect(item._id)}
             >
