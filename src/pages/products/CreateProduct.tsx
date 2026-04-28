@@ -697,7 +697,8 @@ const CreateProduct = ({ onclose, data }: any) => {
       if (hasValues(rootShipping)) {
         fd.append("shipping", JSON.stringify(rootShipping));
       }
-    } else if (variantType === "COLOR" || variantType === "COLOR_SIZE") {
+    }
+    if (variantType === "COLOR" || variantType === "COLOR_SIZE") {
       const payload = colorVariants.map(({ images, ...rest }) => ({
         ...rest,
         imageAltTags: generateAltTags(
@@ -707,11 +708,12 @@ const CreateProduct = ({ onclose, data }: any) => {
       }));
 
       fd.append("colorVariants", JSON.stringify(payload));
-      colorVariants.forEach((v, i) =>
-        v.images.forEach((img) =>
-          fd.append(`colorVariants[${i}][colorImage][]`, img),
-        ),
-      );
+
+      colorVariants.forEach((v, i) => {
+        v.images.forEach((img) => {
+          fd.append(`colorImages_${i}`, img);
+        });
+      });
     } else if (variantType === "SIZE") {
       fd.append("sizeVariants", JSON.stringify(sizeVariants));
     } else if (variantType === "UNIT") {
@@ -945,7 +947,7 @@ const CreateProduct = ({ onclose, data }: any) => {
                 {tags.map((tag) => (
                   <span
                     key={tag}
-                    className="px-2 py-1 bg-orange-100 text-orange-600 rounded flex items-center gap-1"
+                    className="px-2 py-1 bg-blue-100 text-sm capitalize  rounded flex items-center gap-1"
                   >
                     {tag}
                     <button
@@ -1983,10 +1985,11 @@ const CreateProduct = ({ onclose, data }: any) => {
                   {keywords.map((k) => (
                     <span
                       key={k}
-                      className="px-2 py-1 bg-blue-100 rounded flex gap-1 capitalize"
+                      className="px-2 py-1 bg-blue-100 rounded flex gap-1 text-xs capitalize"
                     >
                       {k}
                       <button
+                        className="cursor-pointer"
                         type="button"
                         onClick={() =>
                           setKeywords(keywords.filter((x) => x !== k))
@@ -2019,11 +2022,12 @@ const CreateProduct = ({ onclose, data }: any) => {
                   {highlights.map((h) => (
                     <span
                       key={h}
-                      className="px-2 py-1 bg-green-100 rounded flex gap-1 capitalize"
+                      className="px-2 py-1 bg-blue-100 rounded  text-xs flex gap-1 capitalize"
                     >
                       {h}
                       <button
                         type="button"
+                        className="cursor-pointer"
                         onClick={() =>
                           setHighlights(highlights.filter((x) => x !== h))
                         }

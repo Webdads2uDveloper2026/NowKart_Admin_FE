@@ -114,17 +114,33 @@ const Products = () => {
   ];
 
   const formattedProducts =
-    productData?.length > 0
-      ? productData?.map((item: any) => ({
-          _id: item?._id,
-          name: item?.name,
-          stock: item?.stock?.quantity,
-          price: item?.price?.price || 0,
-          category: item?.category?.name,
-          image: item?.images?.[0] || "",
-          productData: item,
-        }))
-      : [];
+    productData?.map((item: any) => {
+      let price = 0;
+      let stock = 0;
+      let image = "";
+
+      if (item.variantType === "NONE") {
+        price = item?.price?.price || 0;
+        stock = item?.stock?.quantity || 0;
+        image = item?.images?.[0] || "";
+      }
+
+      if (item.variantType === "COLOR") {
+        const firstVariant = item?.colorVariants?.[0];
+        price = firstVariant?.price?.price || 0;
+        stock = firstVariant?.stock?.quantity || 0;
+        image = firstVariant?.images?.[0] || item?.images?.[0] || "";
+      }
+      return {
+        _id: item._id,
+        name: item.name,
+        category: item?.category?.name,
+        price,
+        stock,
+        image,
+        productData: item,
+      };
+    }) || [];
 
   return (
     <>
