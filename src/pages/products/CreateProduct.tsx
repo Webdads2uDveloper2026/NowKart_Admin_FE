@@ -2,9 +2,8 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getCategories } from "../../store/slice/categorySlice";
 import {
-  clearProductState,
   createProduct,
-  getProducts,
+  deleteProductImage,
   updateProduct,
 } from "../../store/slice/productSlice";
 import SingleSelectDropdown from "../../components/Container/Fields/SingleSelectDropdown";
@@ -19,7 +18,7 @@ import {
   getStockStatus,
 } from "../../utils/generate";
 import { usePopup } from "../../components/Container/Popup/PopupProvider";
-import { AddBtn, Field } from "./Field";
+import { AddBtn, Field, PriceBlockFields, ShippingBlockFields } from "./Field";
 import type {
   VariantType,
   PriceBlock,
@@ -39,6 +38,7 @@ import type {
 import { getSubcategories } from "../../store/slice/subcategorySlice";
 import { DarkInput, FormSection, VariantCard } from "./FormComponents";
 import { generateSKU } from "../../utils/generate";
+import { ToggleRow } from "./ToggleRow";
 
 const emptyPrice = (): PriceBlock => ({
   price: "",
@@ -113,81 +113,8 @@ const emptyCustomVariant = (): CustomVariant => ({
 export const inputCls =
   "bg-gray-50 border border-gray-400 rounded-lg text-gray-800 text-sm px-3 py-2.5 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10 transition w-full";
 
-const selectCls =
+export const selectCls =
   "bg-gray-50 border border-gray-400 rounded-lg text-gray-800 text-sm px-3 py-2.5 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10 transition w-full";
-
-const ToggleRow = ({
-  label,
-  sublabel,
-  checked,
-  onChange,
-}: {
-  label: string;
-  sublabel?: string;
-  checked: boolean;
-  onChange: (v: boolean) => void;
-}) => (
-  <div className="flex items-center justify-between border border-gray-400 rounded-lg px-4 py-3 bg-gray-50">
-    <div>
-      <div className="text-sm font-medium text-gray-700">{label}</div>
-      {sublabel && (
-        <div className="text-xs text-gray-400 mt-0.5">{sublabel}</div>
-      )}
-    </div>
-    <button
-      type="button"
-      onClick={() => onChange(!checked)}
-      className={`relative w-10 h-5 rounded-full transition-colors duration-200 flex-shrink-0 ${
-        checked ? "bg-orange-500" : "bg-gray-300"
-      }`}
-    >
-      <span
-        className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 ${
-          checked ? "translate-x-5" : "translate-x-0"
-        }`}
-      />
-    </button>
-  </div>
-);
-
-const PriceBlockFields = ({
-  value,
-  onChange,
-}: {
-  value: PriceBlock;
-  onChange: (v: PriceBlock) => void;
-}) => {
-  const set =
-    (k: keyof PriceBlock) => (e: React.ChangeEvent<HTMLInputElement>) =>
-      onChange({ ...value, [k]: e.target.value });
-  return (
-    <div className="border border-gray-200 rounded-lg p-3 mb-3 bg-white">
-      <div className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-3">
-        Price
-      </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {(
-          [
-            ["price", "Selling Price *"],
-            ["strikeoutPrice", "Strikeout / MRP"],
-            ["wholesalePrice", "Wholesale Price"],
-            ["costPrice", "Cost Price"],
-          ] as [keyof PriceBlock, string][]
-        ).map(([k, lbl]) => (
-          <Field key={k} label={lbl}>
-            <input
-              type="number"
-              value={value[k]}
-              onChange={set(k)}
-              placeholder="0"
-              className={inputCls}
-            />
-          </Field>
-        ))}
-      </div>
-    </div>
-  );
-};
 
 const StockBlockFields = ({
   value,
@@ -248,61 +175,14 @@ const StockBlockFields = ({
   );
 };
 
-const ShippingBlockFields = ({
-  value,
-  onChange,
-}: {
-  value: ShippingBlock;
-  onChange: (v: ShippingBlock) => void;
-}) => {
-  const set =
-    (k: keyof ShippingBlock) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
-      onChange({ ...value, [k]: e.target.value });
-  return (
-    <div className="border border-gray-200 rounded-lg p-3 bg-white">
-      <div className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-3">
-        Shipping
-      </div>
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-        {(
-          ["weight", "length", "width", "height"] as (keyof ShippingBlock)[]
-        ).map((k) => (
-          <Field key={k} label={k.charAt(0).toUpperCase() + k.slice(1)}>
-            <input
-              type="number"
-              value={value[k]}
-              onChange={set(k)}
-              placeholder="0"
-              className={inputCls}
-            />
-          </Field>
-        ))}
-        <Field label="Unit">
-          <select
-            value={value.weightUnit}
-            onChange={set("weightUnit")}
-            className={selectCls}
-          >
-            {["kg", "g", "lb", "oz"].map((u) => (
-              <option key={u}>{u}</option>
-            ))}
-          </select>
-        </Field>
-      </div>
-    </div>
-  );
-};
-
 const CreateProduct = ({ onclose, data }: any) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<any>();
   const { showPopup } = usePopup();
+
   const { categories } = useSelector((state: any) => state.category || {});
   const { subcategories } = useSelector(
     (state: any) => state.subcategory || {},
   );
-  const { createError, createSuccess, updateSuccess, updateError } =
-    useSelector((state: any) => state.product);
 
   const VARIANT_TYPES: VariantType[] = [
     "NONE",
@@ -370,9 +250,9 @@ const CreateProduct = ({ onclose, data }: any) => {
   const [bulkDiscounts, setBulkDiscounts] = useState<BulkDiscount[]>([]);
   const [keywords, setKeywords] = useState<string[]>([]);
   const [keywordInput, setKeywordInput] = useState("");
-
   const [highlights, setHighlights] = useState<string[]>([]);
   const [highlightInput, setHighlightInput] = useState("");
+  const [deletedImages, setDeletedImages] = useState<string[]>([]);
   const [specifications, setSpecifications] = useState([
     { key: "", value: "" },
   ]);
@@ -605,6 +485,7 @@ const CreateProduct = ({ onclose, data }: any) => {
     setWholesaleFields(data?.wholesaleFields || []);
     setIsBulkDiscount(data?.isBulkDiscount || false);
     setBulkDiscounts(data?.bulkDiscounts || []);
+    setBulkDiscounts(data?.bulkDiscounts || []);
 
     if (data?.price) {
       setRootPrice({
@@ -741,10 +622,21 @@ const CreateProduct = ({ onclose, data }: any) => {
     setHighlightInput("");
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (deletedImages.length && data?._id) {
+      await Promise.all(
+        deletedImages.map((img) =>
+          dispatch(
+            deleteProductImage({
+              productId: data._id,
+              imageUrl: img,
+            }),
+          ),
+        ),
+      );
+    }
     if (!core.name) return showPopup("error", "Product name required");
     if (!core.category) return showPopup("error", "Category required");
-    // if (!core.plan) return showPopup("error", "Plan required");
     if (!productImage.length && !data?.images?.length) {
       return showPopup("error", "At least 1 product image required");
     }
@@ -861,38 +753,13 @@ const CreateProduct = ({ onclose, data }: any) => {
     if (seo.canonicalTag) {
       fd.append("canonicalTag", seo.canonicalTag);
     }
+
     if (data?._id) {
       dispatch(updateProduct({ id: data._id, formData: fd }) as any);
     } else {
       dispatch(createProduct(fd) as any);
     }
   };
-
-  useEffect(() => {
-    if (createSuccess) {
-      onclose();
-      showPopup("success", createSuccess);
-      dispatch(getProducts() as any);
-      dispatch(clearProductState());
-    }
-    if (createError) {
-      showPopup("error", createError);
-      dispatch(clearProductState());
-    }
-  }, [createSuccess, createError]);
-
-  useEffect(() => {
-    if (updateSuccess) {
-      onclose();
-      showPopup("success", updateSuccess);
-      dispatch(getProducts() as any);
-      dispatch(clearProductState());
-    }
-    if (updateError) {
-      showPopup("error", updateError);
-      dispatch(clearProductState());
-    }
-  }, [updateSuccess, updateError]);
 
   return (
     <div className="px-20 py-6  mx-auto">
@@ -1033,8 +900,11 @@ const CreateProduct = ({ onclose, data }: any) => {
             label="Upload Images"
             type="image"
             value={productImage}
+            previewUrl={data?.images}
             multiple
             setValue={(files) => setProductImage(files as File[])}
+            deletedFiles={deletedImages}
+            setDeletedFiles={setDeletedImages}
           />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 items-center">
             <DarkInput
@@ -2099,7 +1969,7 @@ const CreateProduct = ({ onclose, data }: any) => {
             </div>
             <div className="md:col-span-2">
               <div>
-                <label>Keywords</label>
+                <label className="text-gray-600 text-sm">Keywords</label>
                 <input
                   value={keywordInput}
                   onChange={(e) => setKeywordInput(e.target.value)}
@@ -2136,7 +2006,7 @@ const CreateProduct = ({ onclose, data }: any) => {
             </div>
             <div className="md:col-span-2">
               <div>
-                <label>Highlights</label>
+                <label className="text-gray-600 text-sm">Highlights</label>
                 <input
                   value={highlightInput}
                   onChange={(e) => setHighlightInput(e.target.value)}
@@ -2195,7 +2065,7 @@ const CreateProduct = ({ onclose, data }: any) => {
             </Field>
             <div className="md:col-span-2">
               <Field label="Specifications">
-                {specifications.map((spec, i) => (
+                {specifications?.map((spec, i) => (
                   <div key={i} className="flex gap-2 mb-2">
                     <input
                       value={spec.key}
@@ -2205,7 +2075,7 @@ const CreateProduct = ({ onclose, data }: any) => {
                         setSpecifications(updated);
                       }}
                       placeholder="Key (e.g. Material)"
-                      className="border p-2 w-1/2 border-gray-400 rounded-md"
+                      className="border p-2 w-1/2 border-gray-400 rounded-md outline-0"
                     />
 
                     <input
@@ -2216,7 +2086,7 @@ const CreateProduct = ({ onclose, data }: any) => {
                         setSpecifications(updated);
                       }}
                       placeholder="Value (e.g. Cotton)"
-                      className="border p-2 w-1/2  border-gray-400 rounded-md"
+                      className="border p-2 w-1/2  border-gray-400 rounded-md outline-0"
                     />
 
                     <button
@@ -2232,9 +2102,8 @@ const CreateProduct = ({ onclose, data }: any) => {
                     </button>
                   </div>
                 ))}
-
-                <button
-                  type="button"
+                <Button
+                  variant="secondary"
                   onClick={() =>
                     setSpecifications([
                       ...specifications,
@@ -2243,7 +2112,7 @@ const CreateProduct = ({ onclose, data }: any) => {
                   }
                 >
                   + Add Specification
-                </button>
+                </Button>
               </Field>
             </div>
           </div>

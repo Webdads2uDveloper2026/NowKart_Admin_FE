@@ -9,6 +9,8 @@ type Props = {
   height?: string;
   multiple?: boolean;
   maxSizeMB?: number;
+  deletedFiles?: string[];
+  setDeletedFiles?: (files: string[]) => void;
 };
 
 const FileUpload = ({
@@ -20,35 +22,35 @@ const FileUpload = ({
   previewUrl = null,
   multiple = false,
   maxSizeMB = 2,
+  deletedFiles = [],
+  setDeletedFiles,
 }: Props) => {
   const BASE_URL = import.meta.env.VITE_BASE_IMAGE_URL;
   const [preview, setPreview] = useState<string[]>([]);
-  const [fileNames, setFileNames] = useState<string[]>([]);
 
   useEffect(() => {
-    if (value) {
-      if (Array.isArray(value)) {
-        const urls = value.map((file) => URL.createObjectURL(file));
-        setPreview(urls);
-        setFileNames(value.map((f) => f.name));
-        return () => urls.forEach((url) => URL.revokeObjectURL(url));
-      } else {
-        const url = URL.createObjectURL(value);
-        setPreview([url]);
-        setFileNames([value.name]);
-        return () => URL.revokeObjectURL(url);
-      }
-    } else if (previewUrl) {
+    let urls: string[] = [];
+
+    if (previewUrl) {
       if (Array.isArray(previewUrl)) {
-        setPreview(previewUrl.map((p) => `${BASE_URL}${p}`));
+        urls = previewUrl.map((p) => `${BASE_URL}${p}`);
       } else {
-        setPreview([`${BASE_URL}${previewUrl}`]);
+        urls = [`${BASE_URL}${previewUrl}`];
       }
-      setFileNames([]);
-    } else {
-      setPreview([]);
-      setFileNames([]);
     }
+
+    if (value) {
+      const files = Array.isArray(value) ? value : [value];
+      const validFiles = files.filter((f) => f instanceof File);
+      const fileUrls = validFiles.map((file) => URL.createObjectURL(file));
+
+      urls = [...urls, ...fileUrls];
+      setPreview(urls);
+
+      return () => fileUrls.forEach((url) => URL.revokeObjectURL(url));
+    }
+
+    setPreview(urls);
   }, [value, previewUrl]);
 
   const processFiles = (files: File[]) => {
@@ -58,7 +60,11 @@ const FileUpload = ({
     });
 
     if (multiple) {
-      setValue(validFiles);
+      if (Array.isArray(value)) {
+        setValue([...value, ...validFiles]);
+      } else {
+        setValue(validFiles);
+      }
     } else {
       setValue(validFiles[0] || null);
     }
@@ -76,12 +82,28 @@ const FileUpload = ({
   };
 
   const removeFile = (index: number) => {
-    if (multiple && Array.isArray(value)) {
-      const updated = value.filter((_, i) => i !== index);
-      setValue(updated);
-    } else {
-      setValue(null);
+    const serverImages = Array.isArray(previewUrl)
+      ? previewUrl
+      : previewUrl
+        ? [previewUrl]
+        : [];
+
+    const isServerImage = index < serverImages.length;
+
+    if (isServerImage) {
+      const removedImage = serverImages[index];
+      if (setDeletedFiles) {
+        setDeletedFiles([...deletedFiles, removedImage]);
+      }
+      setPreview((prev) => prev.filter((_, i) => i !== index));
+      return;
     }
+
+    if (!Array.isArray(value)) return;
+
+    const fileIndex = index - serverImages.length;
+    const updated = value.filter((_, i) => i !== fileIndex);
+    setValue(updated);
   };
 
   return (
@@ -110,7 +132,10 @@ const FileUpload = ({
       {preview.length > 0 && (
         <div className="flex gap-3 mt-3 flex-wrap">
           {preview.map((src, i) => (
-            <div key={i} className="relative border border-gray-300 rounded p-1 bg-white">
+            <div
+              key={i}
+              className="relative border border-gray-300 rounded p-1 bg-white"
+            >
               {type === "image" ? (
                 <img src={src} className="h-15 w-24 object-cover rounded" />
               ) : (
@@ -124,10 +149,6 @@ const FileUpload = ({
               >
                 ✕
               </button>
-
-              <p className="text-xs mt-1 text-center truncate w-24">
-                {fileNames[i] || "Uploaded"}
-              </p>
             </div>
           ))}
         </div>

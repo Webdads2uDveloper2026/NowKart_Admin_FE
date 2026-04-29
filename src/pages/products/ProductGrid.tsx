@@ -34,7 +34,7 @@ export const ProductGrid: React.FC<Props> = ({
   );
 
   console.log(filteredProducts);
-  
+
   const handleEdit = (item: Product) => {
     if (onEdit) onEdit(item);
   };
@@ -73,45 +73,48 @@ export const ProductGrid: React.FC<Props> = ({
           </p>
         </div>
       </div>
-      <div className="overflow-x-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 min-w-[800px]">
-          {filteredProducts?.map((item) => (
-            <div
-              key={item._id}
-              onClick={() => navigate?.(`/products/${item.slug}`)}
-              className="bg-white rounded-xl shadow border border-gray-200 p-4 hover:shadow-lg transition cursor-pointer"
-            >
-              <div className="relative">
-                <Image
-                  src={item?.image}
-                  alt={item.name}
-                  className="w-full h-40 object-contain rounded-lg"
-                />
-                <div
-                  className="absolute top-2 right-2"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <DotMenu
-                    onEdit={() => handleEdit(item)}
-                    onDelete={() => handleDelete(item)}
-                  />
-                </div>
-              </div>
-              <p className="text-orange-600 text-sm mt-3">
-                Stock: {item.stock}
-              </p>
-              {item.category && (
-                <span className="inline-block mt-2 px-3 py-1 text-sm border border-orange-500 text-orange-600 rounded-full">
-                  {item.category}
-                </span>
-              )}
-              <h3 className="font-semibold mt-3 text-gray-800 line-clamp-3">
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {filteredProducts?.map((item) => (
+          <div
+            key={item._id}
+            onClick={() => navigate?.(`/products/${item.slug}`)}
+            className="relative rounded-2xl overflow-hidden group cursor-pointer shadow-md"
+          >
+            <Image
+              src={item?.image}
+              alt={item.name}
+              className="w-full h-64 object-cover group-hover:scale-110 transition duration-500"
+            />
+
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+            <div className="absolute bottom-0 p-4 text-white w-full">
+              <h3 className="font-semibold text-sm line-clamp-2">
                 {item.name}
               </h3>
-              <p className="font-bold mt-1 text-gray-900">₹ {item.price}</p>
+              <div className="flex justify-between items-center">
+                <p className="font-bold text-lg">₹ {item.price}</p>
+                <span className="text-xs bg-white/20 px-2 py-1 rounded">
+                  {item.stock > 0 ? "In Stock" : "Out"}
+                </span>
+              </div>
+              {item.category && (
+                <div className=" text-xs py- tracking-wide">
+                  {item.category}
+                </div>
+              )}
             </div>
-          ))}
-        </div>
+            <div
+              className="absolute top-2 right-2   "
+              onClick={(e) => e.stopPropagation()}
+            >
+              <DotMenu
+                onEdit={() => handleEdit(item)}
+                onDelete={() => handleDelete(item)}
+              />
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

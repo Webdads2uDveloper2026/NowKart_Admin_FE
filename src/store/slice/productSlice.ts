@@ -93,13 +93,29 @@ export const deleteProduct = createAsyncThunk(
 
 export const deleteProductImage = createAsyncThunk(
   "product/deleteImage",
-  async (id: string, { rejectWithValue }) => {
+  async (
+    {
+      productId,
+      imageUrl,
+      variantId,
+    }: {
+      productId: string;
+      imageUrl: string;
+      variantId?: string;
+    },
+    { rejectWithValue },
+  ) => {
     try {
       await Fetch({
-        endpoint: `/admin/product/${id}/image`,
+        endpoint: `/admin/product/${productId}/image`,
         method: "DELETE",
+        body: {
+          imageUrl,
+          ...(variantId && { variantId }),
+        },
       });
-      return id;
+
+      return { imageUrl, variantId };
     } catch (err: any) {
       return rejectWithValue(
         err?.response?.data?.message || "Delete image failed",
@@ -186,7 +202,7 @@ const productSlice = createSlice({
       })
       .addCase(getProductBySlug.fulfilled, (state, action) => {
         state.loading = false;
-        state.product = action.payload.product; 
+        state.product = action.payload.product;
       })
       .addCase(getProductBySlug.rejected, (state, action) => {
         state.loading = false;
@@ -220,8 +236,29 @@ const productSlice = createSlice({
         state.deleteError = action.payload;
       })
 
-      .addCase(deleteProductImage.rejected, (state, action) => {
-        state.deleteError = action.payload;
+      .addCase(deleteProductImage.fulfilled, (state, action) => {
+        state.loading = false;
+        if (state.product?.images) {
+          state.product.images = state.product.images.filter(
+            (img: string) => img !== action.payload.imageUrl,
+          );
+        }
+
+        if (action.payload.variantId && state.product?.colorVariants) {
+          state.product.colorVariants = state.product.colorVariants.map(
+            (v: any) => {
+              if (v._id === action.payload.variantId) {
+                return {
+                  ...v,
+                  images: v.images.filter(
+                    (img: string) => img !== action.payload.imageUrl,
+                  ),
+                };
+              }
+              return v;
+            },
+          );
+        }
       });
   },
 });

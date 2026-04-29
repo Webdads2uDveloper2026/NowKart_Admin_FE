@@ -21,11 +21,15 @@ const Products = () => {
   const { showPopup } = usePopup();
   const [openCreate, setOpenCreate] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const {
+    createError,
+    createSuccess,
+    updateSuccess,
+    updateError,
+    deleteSuccess,
+    deleteError,
+  } = useSelector((state: any) => state.product);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
-  const { deleteSuccess, deleteError } = useSelector(
-    (state: any) => state.product,
-  );
-
   const { products, loading } = useSelector(
     (state: any) => state.product || {},
   );
@@ -130,6 +134,34 @@ const Products = () => {
         slug: item.slug,
       };
     }) || [];
+
+  useEffect(() => {
+    if (createSuccess) {
+      setOpenCreate(false);
+      setSelectedProduct(null);
+      showPopup("success", createSuccess);
+      dispatch(getProducts() as any);
+      dispatch(clearProductState());
+    }
+    if (createError) {
+      showPopup("error", createError);
+      dispatch(clearProductState());
+    }
+  }, [createSuccess, createError]);
+
+  useEffect(() => {
+    if (updateSuccess) {
+      setOpenCreate(false);
+      setSelectedProduct(null);
+      showPopup("success", updateSuccess);
+      dispatch(getProducts() as any);
+      dispatch(clearProductState());
+    }
+    if (updateError) {
+      showPopup("error", updateError);
+      dispatch(clearProductState());
+    }
+  }, [updateSuccess, updateError]);
 
   return (
     <>

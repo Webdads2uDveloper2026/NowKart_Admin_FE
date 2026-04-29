@@ -25,9 +25,25 @@ export const generateAltTags = (name: string, count: number) => {
   );
 };
 
-
- export const getStockStatus = (qty: number) => {
+export const getStockStatus = (qty: number) => {
   if (qty === 0) return "OUT_OF_STOCK";
   if (qty <= 5) return "LIMITED";
   return "IN_STOCK";
 };
+
+export const COLOR_SWATCHES = [
+  { name: "Red", hex: "#ff0000" },
+  { name: "Green", hex: "#00ff00" },
+  { name: "Blue", hex: "#0000ff" },
+  { name: "Black", hex: "#000000" },
+  { name: "White", hex: "#ffffff" },
+  { name: "Yellow", hex: "#ffff00" },
+  { name: "Orange", hex: "#ffa500" },
+  { name: "Purple", hex: "#800080" },
+  { name: "Gray", hex: "#808080" },
+  { name: "Pink", hex: "#ffc0cb" },
+  { name: "Brown", hex: "#8b4513" },
+  { name: "Navy Blue", hex: "#000080" },
+];
+
+
