@@ -9,6 +9,7 @@ type Product = {
   image?: string;
   stock: number;
   category?: string;
+  slug: string;
   price: number;
 };
 
@@ -17,6 +18,7 @@ type Props = {
   onAdd: () => void;
   onEdit?: (item: Product) => void;
   onDelete?: (item: Product) => void;
+  navigate?: (path: string) => void;
 };
 
 export const ProductGrid: React.FC<Props> = ({
@@ -24,12 +26,15 @@ export const ProductGrid: React.FC<Props> = ({
   onAdd,
   onEdit,
   onDelete,
+  navigate,
 }) => {
   const [search, setSearch] = useState<string>("");
   const filteredProducts = products?.filter((item) =>
     item.name.toLowerCase().includes(search.toLowerCase()),
   );
 
+  console.log(filteredProducts);
+  
   const handleEdit = (item: Product) => {
     if (onEdit) onEdit(item);
   };
@@ -73,7 +78,8 @@ export const ProductGrid: React.FC<Props> = ({
           {filteredProducts?.map((item) => (
             <div
               key={item._id}
-              className="bg-white rounded-xl shadow border border-gray-200 p-4 hover:shadow-lg transition"
+              onClick={() => navigate?.(`/products/${item.slug}`)}
+              className="bg-white rounded-xl shadow border border-gray-200 p-4 hover:shadow-lg transition cursor-pointer"
             >
               <div className="relative">
                 <Image
@@ -81,7 +87,10 @@ export const ProductGrid: React.FC<Props> = ({
                   alt={item.name}
                   className="w-full h-40 object-contain rounded-lg"
                 />
-                <div className="absolute top-2 right-2">
+                <div
+                  className="absolute top-2 right-2"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <DotMenu
                     onEdit={() => handleEdit(item)}
                     onDelete={() => handleDelete(item)}

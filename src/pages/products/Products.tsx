@@ -13,9 +13,11 @@ import ConfirmDeleteModal from "../../components/Container/CommonDeleteModel/Com
 import { usePopup } from "../../components/Container/Popup/PopupProvider";
 import Image from "../../components/Container/Image/Image";
 import { getVariantData } from "../../utils/getVariantData";
+import { useNavigate } from "react-router-dom";
 
 const Products = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { showPopup } = usePopup();
   const [openCreate, setOpenCreate] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -125,6 +127,7 @@ const Products = () => {
         stock,
         image: image || "/fallback.png",
         productData: item,
+        slug: item.slug,
       };
     }) || [];
 
@@ -169,6 +172,7 @@ const Products = () => {
               onAdd={handleAdd}
               onEdit={handleEdit}
               onDelete={handleDelete}
+              navigate={navigate}
             />
           ) : (
             <Table

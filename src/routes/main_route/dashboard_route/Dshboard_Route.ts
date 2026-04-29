@@ -6,6 +6,7 @@ import Dashboard from "../../../pages/dashboard/Dashboard";
 import HoleSales from "../../../pages/hole_sales/HoleSales";
 import Orders from "../../../pages/orders/Orders";
 import Product_Enquiries from "../../../pages/produc_inquiries/Product_Enquiries";
+import ProductDetailPage from "../../../pages/products/ProductDetails";
 import Products from "../../../pages/products/Products";
 import SubCategory from "../../../pages/sub_category/SubCategory";
 import Users from "../../../pages/users/Users";
@@ -27,6 +28,10 @@ export const Dashboard_Route = [
   {
     path: "/products",
     Component: Products,
+  },
+  {
+    path: "/products/:slug",
+    Component: ProductDetailPage,
   },
   {
     path: "/orders",

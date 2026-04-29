@@ -108,6 +108,23 @@ export const deleteProductImage = createAsyncThunk(
   },
 );
 
+export const getProductBySlug = createAsyncThunk(
+  "product/getBySlug",
+  async (slug: string, { rejectWithValue }) => {
+    try {
+      const res = await Fetch({
+        endpoint: `/admin/product/${slug}`,
+        method: "GET",
+      });
+      return res.data;
+    } catch (err: any) {
+      return rejectWithValue(
+        err?.response?.data?.message || "Fetch product failed",
+      );
+    }
+  },
+);
+
 const productSlice = createSlice({
   name: "product",
   initialState: {
@@ -121,6 +138,7 @@ const productSlice = createSlice({
     deleteError: null as any,
     products: [] as any[],
     vendorProducts: [] as any[],
+    product: null as any,
   },
 
   reducers: {
@@ -159,6 +177,18 @@ const productSlice = createSlice({
         state.products = action.payload;
       })
       .addCase(getProducts.rejected, (state, action) => {
+        state.loading = false;
+        state.fetchError = action.payload;
+      })
+      .addCase(getProductBySlug.pending, (state) => {
+        state.loading = true;
+        state.fetchError = null;
+      })
+      .addCase(getProductBySlug.fulfilled, (state, action) => {
+        state.loading = false;
+        state.product = action.payload.product; 
+      })
+      .addCase(getProductBySlug.rejected, (state, action) => {
         state.loading = false;
         state.fetchError = action.payload;
       })
