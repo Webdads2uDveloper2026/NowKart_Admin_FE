@@ -39,11 +39,10 @@ const App = () => {
                 className="h-full "
               >
                 <div
-                  className={`h-full  ${
-                    isDarkMode
-                      ? "bg-gray-800/90 backdrop-blur-sm shadow-lg shadow-gray-900/50 border border-gray-700/50"
-                      : "bg-white shadow-md border border-gray-100"
-                  } overflow-auto`}
+                  className={`h-full  ${isDarkMode
+                    ? "bg-gray-800/90 backdrop-blur-sm shadow-lg shadow-gray-900/50 border border-gray-700/50"
+                    : "bg-white shadow-md border border-gray-100"
+                    } overflow-auto`}
                 >
                   <Outlet />
                 </div>

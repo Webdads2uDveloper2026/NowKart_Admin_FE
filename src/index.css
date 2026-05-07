@@ -1,6 +1,12 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@100..1000&display=swap");
 @import "tailwindcss";
+
+body {
+  font-family: "DM Sans", sans-serif;
+}
 
 .ck-editor__editable {
   min-height: 250px;
   padding: 0px 10px;
+  font-family: "DM Sans", sans-serif;
 }

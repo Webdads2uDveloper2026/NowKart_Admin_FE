@@ -130,10 +130,10 @@ const ResuableFields: React.FC<ReusableFieldsProps> = ({
     isOpen ||
     isActive;
 
-  const labelStyles = `absolute transition-all duration-200 pointer-events-none z-10 left-3 px-1 rounded-sm ${
+  const labelStyles = `absolute transition-all duration-200 pointer-events-none z-10 left-1 px-1 rounded-sm  ${
     isFloating
-      ? `-top-2.5 text-[12px] ${
-          isDarkMode ? "bg-[#101828] text-white" : "bg-white text-black"
+      ? `-top-5 text-[11px] ${
+          isDarkMode ? " text-white" : " text-white"
         }`
       : "top-1/2 -translate-y-1/2 text-[14px]"
   } ${
